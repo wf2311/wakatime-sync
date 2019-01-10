@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,height=device-height">
+    <title>WakaTime</title>
+    <style>::-webkit-scrollbar {
+        display: none;
+    }
+    </style>
+</head>
+<body>
+<div id="app">
+    <template>
+        <div class="block">
+            <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations" circle></el-button>
+            <el-date-picker v-model="durationDay" type="date" placeholder="选择日期" @change="updateDurations"
+                            format="yyyy-MM-dd">
+            </el-date-picker>
+            <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations" circle></el-button>
+        </div>
+    </template>
+</div>
+<div id="durations"></div>
+<div id="coding-activity"></div>
+<div id="day-map" style="height:800px;"></div>
+
+<script>/*Fixing iframe window.innerHeight 0 issue in Safari*/
+document.body.clientHeight;</script>
+<script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.4.1/dist/g2.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/4.1.0/echarts.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<script src="https://cdn.bootcss.com/moment-duration-format/2.2.2/moment-duration-format.min.js"></script>
+<script th:src="@{/js/wakatime.js}"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        created() {
+            let now = moment();
+            let end = formatDay(now.subtract(1, 'd'));
+            this.loadDurations();
+            initSummaries(formatDay(now.subtract(11,'d')), end);
+            initDayMap(formatDay(now.subtract(1,'y')), end, false);
+        },
+        data() {
+            return {
+                durationDay: ''
+            }
+        }, methods: {
+            loadDurations: function () {
+                if (!this.durationDay) {
+                    let now = moment();
+                    console.info(now);
+                    this.durationDay = now.subtract(1, 'd');
+                }
+                initDurations(this.formatDurationDate());
+            },
+            updateDurations: function () {
+                this.durationDay = moment(this.durationDay);
+                updateDurations(this.formatDurationDate());
+            },
+            preDayDurations: function () {
+                this.durationDay = moment(this.durationDay.subtract(1, 'd'));
+                updateDurations(this.formatDurationDate());
+            },
+            nextDayDurations: function () {
+                this.durationDay = moment(this.durationDay.add(1, 'd'));
+                updateDurations(this.formatDurationDate());
+            },
+            formatDurationDate() {
+                return formatDay(this.durationDay);
+            }
+        }
+    });
+</script>
+</body>
+</html>

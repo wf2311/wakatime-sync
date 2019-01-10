@@ -23,3 +23,6 @@ wakatime-sync-web/wakatime-sync-web.iml
 /dist/
 /nbdist/
 /.nb-gradle/
+*.iml
+
+wakatime-sync-web/target/classes/

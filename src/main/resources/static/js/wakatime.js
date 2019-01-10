@@ -1,0 +1,250 @@
+const API_DOMAIN = "";
+const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
+window.projects = [];
+
+function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
+}
+
+function formatDay(date) {
+    return moment(date).format('YYYY-MM-DD')
+}
+
+Array.prototype.sum = function (prop) {
+    let total = 0;
+    for (let i = 0, _len = this.length; i < _len; i++) {
+        total += this[i][prop];
+    }
+    return total
+}
+
+function formatDurations(seconds) {
+    let date = new Date(null);
+    date.setSeconds(seconds);
+    return date.toISOString().substr(11, 8);
+}
+
+function getEveryProjectDayDurations(data) {
+    let dataMap = groupBy(data, d => d.project);
+    const duMap = new Map();
+    dataMap.forEach((v, k) => {
+        if (window.projects.indexOf(k) < 0) {
+            window.projects.push(k);
+        }
+        const seconds = v.sum("duration");
+        let text = formatDurations(seconds);
+        duMap.set(k, {
+            "duration": seconds,
+            "text": text
+        })
+    });
+    return duMap;
+}
+
+let durationChart = new G2.Chart({
+    container: 'durations',
+    forceFit: false,
+    height: 300,
+    width: 1000,
+    padding: {top: 20, right: 30, bottom: 20, left: 300},
+    theme: 'default'
+});
+let activityChart = new G2.Chart({
+    container: 'coding-activity',
+    forceFit: false,
+    height: 500,
+    width: 1000,
+    padding: {top: 20, right: 30, bottom: 20, left: 20}
+});
+
+function getDayDurations(date) {
+    let data = [];
+    $.ajax({
+        url: API_DOMAIN + '/api/v1/durations',
+        dataType: 'json',
+        type: 'get',
+        data: {
+            date: date
+        },
+        async: false,
+        headers: {
+            Accept: "application/json; charset=utf-8"
+        }, success: function (rs) {
+            data = rs.data;
+        }
+    });
+    const day = moment(date);
+
+    let duMap = getEveryProjectDayDurations(data);
+
+    data.forEach(function (obj) {
+        const start = moment(obj.startTime).unix() - day.unix();
+        obj.range = [start / 3600, (obj.duration + start) / 3600];
+        obj.text = obj.project + "  " + duMap.get(obj.project).text;
+        obj.index = window.projects.indexOf(obj.project) % 24;
+    });
+    durationChart.changeHeight(50 + duMap.size * 24);
+    return data;
+}
+
+function getRangeDurations(start, end, showAll) {
+    let data = [];
+    $.ajax({
+        url: API_DOMAIN + '/api/v1/range/durations',
+        dataType: 'json',
+        type: 'get',
+        data: {
+            start: start,
+            end: end,
+            showAll: showAll,
+        },
+        async: false,
+        headers: {
+            Accept: "application/json; charset=utf-8"
+        }, success: function (rs) {
+            data = rs.data;
+        }
+    });
+
+    var dd = [];
+    data.forEach(function (obj) {
+        let duration = obj.total / 3600;
+        dd.push([obj.date, duration.toFixed(2)]);
+    });
+    return dd;
+}
+
+function getSummaries(start, end) {
+    var summaries = {};
+    $.ajax({
+        url: API_DOMAIN + '/api/v1/summaries',
+        dataType: 'json',
+        type: 'get',
+        data: {
+            start: start,
+            end: end
+        },
+        async: false,
+        headers: {
+            Accept: "application/json; charset=utf-8"
+        }, success: function (rs) {
+            summaries = rs.data;
+        }
+    });
+    return summaries;
+}
+
+function initDurations(date) {
+    if (!window.projects) {
+        window.projects = [];
+    }
+    let data = getDayDurations(date);
+    durationChart.source(data, {
+        range: {
+            type: 'linear',
+            min: 0,
+            max: 24,
+            tickCount: 25
+        }
+    });
+
+    durationChart.coord().transpose().scale(1, -1);
+    durationChart.interval().tooltip(false).size(20).position('text*range').color('project');
+    durationChart.render();
+}
+
+function initSummaries(start, end) {
+    if (!window.projects) {
+        window.projects = [];
+    }
+    let summaries = getSummaries(start, end);
+    var ads = new DataSet();
+    var adv = ads.createView().source(summaries.projects);
+    adv.transform({
+        type: 'map',
+        callback(row) { // 加工数据后返回新的一行，默认返回行数据本身
+            if (window.projects.indexOf(row.name) < 0) {
+                window.projects.push(row.name);
+            }
+            row.index = window.projects.indexOf(row.name);
+            row.duration = row.totalSeconds / 3600;
+            return row;
+        }
+    }).transform({
+        type: 'sort-by',
+        fields: ['day', 'duration'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
+        order: 'DESC'        // 默认为 ASC，DESC 则为逆序
+    });
+    //https://github.com/antvis/g2/issues/574
+    console.info(adv);
+    activityChart.source(adv);
+    activityChart.interval().tooltip('name*totalSeconds', function (name, totalSeconds) {
+        return {
+            name: name,
+            value: formatDurations(totalSeconds)
+        };
+    }).position('day*duration').size(80).color('name');
+    activityChart.render();
+}
+
+function initDayMap(start, end, showAll) {
+    var myChart = echarts.init(document.getElementById('day-map'));
+    var data = getRangeDurations(start, end, showAll);
+    var range = [data[0][0], data[data.length - 1][0]];
+    option = {
+        tooltip: {
+            position: 'top',
+            formatter: function (p) {
+                var format = echarts.format.formatTime('yyyy-MM-dd', p.data[0]);
+                return format + ': ' + p.data[1] + "小时";
+            }
+        },
+
+        visualMap: {
+            min: 0,
+            max: 24,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            top: 'top'
+        },
+        calendar: [
+            {
+                range: range,
+                orient: 'horizontal',
+                dayLabel: {
+                    firstDay: 1,
+                    nameMap: 'cn'
+
+                },
+                monthLabel: {
+                    nameMap: 'cn'
+                },
+                cellSize: [20, 20]
+            }],
+
+        series: [{
+            type: 'heatmap',
+            coordinateSystem: 'calendar',
+            data: data
+        }]
+
+    };
+
+    myChart.setOption(option);
+}
+
+function updateDurations(date) {
+    let data = getDayDurations(date);
+    durationChart.changeData(data);
+}
