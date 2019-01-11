@@ -1,9 +1,9 @@
 package com.wf2311.wakatime.sync.controller.api;
 
-import com.google.common.base.Strings;
 import com.wf2311.wakatime.sync.config.WakatimeProperties;
 import com.wf2311.wakatime.sync.domain.base.JsonResult;
 import com.wf2311.wakatime.sync.service.sync.SyncService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ public class SyncApi {
 
     @PostMapping("/sync")
     public JsonResult sync(int day, String apiKey) {
-        if (Strings.isNullOrEmpty(apiKey) || !apiKey.equals(WakatimeProperties.SECRET_API_KEY)) {
+        if (StringUtils.isEmpty(apiKey) || !apiKey.equals(WakatimeProperties.SECRET_API_KEY)) {
             throw new IllegalArgumentException();
         }
         syncService.sync(day);

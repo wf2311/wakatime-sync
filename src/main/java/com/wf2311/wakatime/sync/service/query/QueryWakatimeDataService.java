@@ -1,12 +1,12 @@
 package com.wf2311.wakatime.sync.service.query;
 
-import com.google.common.base.Strings;
 import com.wf2311.jfeng.time.DateHelper;
 import com.wf2311.wakatime.sync.domain.DayDurationUnit;
 import com.wf2311.wakatime.sync.domain.ShowSummaryData;
 import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.repository.DurationRepository;
 import com.wf2311.wakatime.sync.service.AbstractDaySummaryService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -59,11 +59,11 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         if (showAll != null && showAll) {
             return selectRangeDurations(projectionOperation(), groupOperation(), sortOperation());
         }
-        if (Strings.isNullOrEmpty(start) && Strings.isNullOrEmpty(end)) {
+        if (StringUtils.isEmpty(start) && StringUtils.isEmpty(end)) {
             return selectRangeDurations();
         }
         LocalDateTime s = DateHelper.parse(start);
-        LocalDateTime e = Strings.isNullOrEmpty(end) ? LocalDateTime.now() : DateHelper.parse(end);
+        LocalDateTime e = StringUtils.isEmpty(end) ? LocalDateTime.now() : DateHelper.parse(end);
         if (s.isAfter(e)) {
             throw new IllegalArgumentException();
         }
