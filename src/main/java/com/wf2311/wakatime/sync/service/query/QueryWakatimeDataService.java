@@ -44,13 +44,13 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         LocalDate start = DateHelper.parse(startDay).toLocalDate();
         LocalDate end = DateHelper.parse(endDay).toLocalDate();
         ShowSummaryData data = new ShowSummaryData();
-        data.setCategories(dayCategoryRepository.queryByDay(start, end));
-        data.setDependencies(dayDependencyRepository.queryByDay(start, end));
-        data.setEditors(dayEditorRepository.queryByDay(start, end));
-        data.setEntities(dayEntityRepository.queryByDay(start, end));
-        data.setGrandTotal(dayGrandTotalRepository.queryByDay(start, end));
-        data.setLanguages(dayLanguageRepository.queryByDay(start, end));
-        data.setOperatingSystems(dayOperateSystemRepository.queryByDay(start, end));
+//        data.setCategories(dayCategoryRepository.queryByDay(start, end));
+//        data.setDependencies(dayDependencyRepository.queryByDay(start, end));
+//        data.setEditors(dayEditorRepository.queryByDay(start, end));
+//        data.setEntities(dayEntityRepository.queryByDay(start, end));
+//        data.setGrandTotal(dayGrandTotalRepository.queryByDay(start, end));
+//        data.setLanguages(dayLanguageRepository.queryByDay(start, end));
+//        data.setOperatingSystems(dayOperateSystemRepository.queryByDay(start, end));
         data.setProjects(dayProjectRepository.queryByDay(start, end));
         return data;
     }

@@ -1,7 +1,7 @@
 server:
   port: 3040
 wakatime:
-  secret-api-key: @wakatime.app.key@
+  secret-api-key: @wakatime.app.key@  # wakatime app key
 logging:
   config: classpath:log4j2-spring.xml
 spring:
@@ -19,5 +19,5 @@ spring:
     password: @redis.password@
   data:
     mongodb:
-      uri: @mongodb.wakatime-sync.uri@
+      uri: @mongodb.wakatime-sync.uri@  # MongoDB数据url
 

@@ -64,7 +64,7 @@ let activityChart = new G2.Chart({
     forceFit: false,
     height: 500,
     width: 1000,
-    padding: {top: 20, right: 30, bottom: 20, left: 20}
+    padding: {top: 20, right: 30, bottom: 20, left: 80}
 });
 
 function getDayDurations(date) {
@@ -186,14 +186,20 @@ function initSummaries(start, end) {
         order: 'DESC'        // 默认为 ASC，DESC 则为逆序
     });
     //https://github.com/antvis/g2/issues/574
-    console.info(adv);
     activityChart.source(adv);
+    activityChart.axis('day', {
+        label: {
+            formatter: function formatter(day) {
+                return day;
+            }
+        }
+    });
     activityChart.interval().tooltip('name*totalSeconds', function (name, totalSeconds) {
         return {
             name: name,
             value: formatDurations(totalSeconds)
         };
-    }).position('day*duration').size(80).color('name');
+    }).position('day*duration').size(40).color('name');
     activityChart.render();
 }
 

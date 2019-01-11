@@ -11,6 +11,7 @@
 </head>
 <body>
 <div id="app">
+    <div>每日项目持续时间图：</div>
     <template>
         <div class="block">
             <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations" circle></el-button>
@@ -22,7 +23,9 @@
     </template>
 </div>
 <div id="durations"></div>
+<div>最近两周项目活动情况：</div>
 <div id="coding-activity"></div>
+<div>最近一年每日编码耗时情况：</div>
 <div id="day-map" style="height:800px;"></div>
 
 <script>/*Fixing iframe window.innerHeight 0 issue in Safari*/
@@ -41,11 +44,10 @@ document.body.clientHeight;</script>
     var vm = new Vue({
         el: '#app',
         created() {
-            let now = moment();
-            let end = formatDay(now.subtract(1, 'd'));
+            let end = formatDay(moment().subtract(1, 'd'));
             this.loadDurations();
-            initSummaries(formatDay(now.subtract(11,'d')), end);
-            initDayMap(formatDay(now.subtract(1,'y')), end, false);
+            initSummaries(formatDay(moment().subtract(14, 'd')), end);
+            initDayMap(formatDay(moment().subtract(1, 'y')), end, false);
         },
         data() {
             return {
