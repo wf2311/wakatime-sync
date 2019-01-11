@@ -1,6 +1,5 @@
 package com.wf2311.wakatime.sync.service.sync;
 
-import com.wf2311.jfeng.lang.CollectionUtils;
 import com.wf2311.wakatime.sync.convert.DaySummaryConverter;
 import com.wf2311.wakatime.sync.domain.DaySummary;
 import com.wf2311.wakatime.sync.domain.day.DayGrandTotal;
@@ -11,6 +10,7 @@ import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +28,7 @@ public class DaySummaryService extends AbstractDaySummaryService {
     public void sync(LocalDate day) {
         Integer localSeconds = 0;
         List<DayGrandTotalEntity> dayGrandTotals = dayGrandTotalRepository.queryByDay(day);
-        if (CollectionUtils.isNotEmpty(dayGrandTotals)) {
+        if (!CollectionUtils.isEmpty(dayGrandTotals)) {
             localSeconds = dayGrandTotals.get(0).getTotalSeconds();
         }
         DaySummary summary = WakaTimeDataSpider.summary(day);
@@ -64,7 +64,7 @@ public class DaySummaryService extends AbstractDaySummaryService {
     }
 
     private <T> void saveDayData(LocalDate day, List<T> list, Class<? extends BaseDayEntity> clazz) {
-        if (CollectionUtils.isNotEmpty(list)) {
+        if (!CollectionUtils.isEmpty(list)) {
             DaySummaryQueryHandler handler = dayRepositoryMap.get(clazz);
             deleteDataIfNotNull(day, handler);
             handler.saveAll(list);

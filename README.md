@@ -33,8 +33,10 @@
 - 数据库： MongoDB
 - 前端：Moment.js、ElementUI、AntV-G2 、Echarts 
 
-### 试用方法
+### 使用方法
 替换或设置好`src/main/resources/application.yml`配置文件中的`wakatime.app.key`和`mongodb.wakatime-sync.uri`，采用maven打包的方式安装即可，支持Docker方式安装。
+
+示例地址：[https://wakatime.wf2311.com](https://wakatime.wf2311.com)
 
 > tips: 如果你一直在使用 wakatime ，如果想使用本项目同步你所有的历史数据，可以在官网上试用付费版的方式获得1个月(还是半个月？)的付费版功能，然后通过本项目来同步所有的历史数据：`POST /api/v1/sync`。
 ### TODO

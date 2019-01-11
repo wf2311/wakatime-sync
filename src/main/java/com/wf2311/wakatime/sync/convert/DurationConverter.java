@@ -1,10 +1,10 @@
 package com.wf2311.wakatime.sync.convert;
 
-import com.wf2311.jfeng.lang.CollectionUtils;
 import com.wf2311.wakatime.sync.domain.Duration;
 import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.spider.JsonParser;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class DurationConverter {
     }
 
     private void convert() {
-        if (CollectionUtils.isNotEmpty(data)) {
+        if (!CollectionUtils.isEmpty(data)) {
             this.durations = data.stream().map(this::convert).collect(Collectors.toList());
         }
     }

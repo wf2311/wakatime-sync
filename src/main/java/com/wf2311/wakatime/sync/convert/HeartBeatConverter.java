@@ -1,8 +1,8 @@
 package com.wf2311.wakatime.sync.convert;
 
-import com.wf2311.jfeng.lang.CollectionUtils;
 import com.wf2311.wakatime.sync.domain.HeartBeat;
 import com.wf2311.wakatime.sync.entity.HeartBeatEntity;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class HeartBeatConverter {
     }
 
     private void convert() {
-        if (CollectionUtils.isNotEmpty(data)) {
+        if (!CollectionUtils.isEmpty(data)) {
             this.heartBeats = data.stream().map(this::convert).collect(Collectors.toList());
         }
     }

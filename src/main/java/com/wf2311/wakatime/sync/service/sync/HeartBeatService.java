@@ -1,6 +1,5 @@
 package com.wf2311.wakatime.sync.service.sync;
 
-import com.wf2311.jfeng.lang.CollectionUtils;
 import com.wf2311.wakatime.sync.convert.HeartBeatConverter;
 import com.wf2311.wakatime.sync.domain.HeartBeat;
 import com.wf2311.wakatime.sync.entity.HeartBeatEntity;
@@ -9,6 +8,7 @@ import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
@@ -52,7 +52,7 @@ public class HeartBeatService {
             return 0;
         }
         List<HeartBeatEntity> heartBeats = HeartBeatConverter.of(data).getHeartBeats();
-        if (CollectionUtils.isNotEmpty(heartBeats)) {
+        if (!CollectionUtils.isEmpty(heartBeats)) {
             deleteDataIfNotNull(day);
             heartBeatRepository.saveAll(heartBeats);
         }

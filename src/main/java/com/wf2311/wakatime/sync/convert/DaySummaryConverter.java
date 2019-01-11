@@ -1,8 +1,8 @@
 package com.wf2311.wakatime.sync.convert;
 
-import com.wf2311.jfeng.lang.CollectionUtils;
 import com.wf2311.wakatime.sync.domain.DaySummary;
 import com.wf2311.wakatime.sync.entity.*;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,28 +39,28 @@ public class DaySummaryConverter {
     }
 
     private void convert() {
-        if (CollectionUtils.isNotEmpty(summary.getCategories())) {
+        if (!CollectionUtils.isEmpty(summary.getCategories())) {
             this.categories = summary.getCategories().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-        if (CollectionUtils.isNotEmpty(summary.getDependencies())) {
+        if (!CollectionUtils.isEmpty(summary.getDependencies())) {
             this.dependencies = summary.getDependencies().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-        if (CollectionUtils.isNotEmpty(summary.getEditors())) {
+        if (!CollectionUtils.isEmpty(summary.getEditors())) {
             this.editors = summary.getEditors().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-        if (CollectionUtils.isNotEmpty(summary.getEntities())) {
+        if (!CollectionUtils.isEmpty(summary.getEntities())) {
             this.entities = summary.getEntities().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
         if (summary.getGrandTotal() != null) {
             this.grandTotal = summary.getGrandTotal().convert(day, now);
         }
-        if (CollectionUtils.isNotEmpty(summary.getLanguages())) {
+        if (!CollectionUtils.isEmpty(summary.getLanguages())) {
             this.languages = summary.getLanguages().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-        if (CollectionUtils.isNotEmpty(summary.getSystem())) {
+        if (!CollectionUtils.isEmpty(summary.getSystem())) {
             this.operateSystems = summary.getSystem().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-        if (CollectionUtils.isNotEmpty(summary.getProjects())) {
+        if (!CollectionUtils.isEmpty(summary.getProjects())) {
             this.projects = summary.getProjects().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
     }

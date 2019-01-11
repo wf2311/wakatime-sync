@@ -1,10 +1,6 @@
 package com.wf2311.wakatime.sync.spider;
 
-import com.wf2311.wakatime.sync.domain.Duration;
-import com.wf2311.wakatime.sync.domain.HeartBeat;
-import com.wf2311.wakatime.sync.domain.ProjectDuration;
-import com.wf2311.wakatime.sync.domain.DaySummary;
-import org.apache.tools.ant.Project;
+import com.wf2311.wakatime.sync.domain.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
