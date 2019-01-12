@@ -2,7 +2,10 @@ package com.wf2311.wakatime.sync.service.query;
 
 import com.wf2311.jfeng.time.DateHelper;
 import com.wf2311.wakatime.sync.domain.DayDurationUnit;
+import com.wf2311.wakatime.sync.domain.DayProjectChartUnit;
+import com.wf2311.wakatime.sync.domain.DayTypeGroupSummaryUnit;
 import com.wf2311.wakatime.sync.domain.ShowSummaryData;
+import com.wf2311.wakatime.sync.entity.DayProjectEntity;
 import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.repository.DurationRepository;
 import com.wf2311.wakatime.sync.service.AbstractDaySummaryService;
@@ -16,6 +19,7 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Order.asc;
 import static org.springframework.data.domain.Sort.by;
@@ -44,20 +48,30 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         LocalDate start = DateHelper.parse(startDay).toLocalDate();
         LocalDate end = DateHelper.parse(endDay).toLocalDate();
         ShowSummaryData data = new ShowSummaryData();
-//        data.setCategories(dayCategoryRepository.queryByDay(start, end));
-//        data.setDependencies(dayDependencyRepository.queryByDay(start, end));
-//        data.setEditors(dayEditorRepository.queryByDay(start, end));
-//        data.setEntities(dayEntityRepository.queryByDay(start, end));
-//        data.setGrandTotal(dayGrandTotalRepository.queryByDay(start, end));
-//        data.setLanguages(dayLanguageRepository.queryByDay(start, end));
-//        data.setOperatingSystems(dayOperateSystemRepository.queryByDay(start, end));
-        data.setProjects(dayProjectRepository.queryByDay(start, end));
+        List<DayProjectEntity> projects = dayProjectRepository.queryByDay(start, end);
+        List<DayProjectChartUnit> chartProjects = projects.stream().map(p -> {
+            DayProjectChartUnit u = new DayProjectChartUnit();
+            u.setDay(p.getDay().toString());
+            u.setTotalSeconds(p.getTotalSeconds());
+            u.setName(p.getName());
+            return u;
+        }).collect(Collectors.toList());
+        data.setProjects(chartProjects);
+        data.setEditors(selectDayTypeGroupSummaries("day_editor", start, end));
+        data.setLanguages(selectDayTypeGroupSummaries("day_language", start, end));
+        data.setOperatingSystems(selectDayTypeGroupSummaries("day_operating_system", start, end));
         return data;
+    }
+
+    private List<DayTypeGroupSummaryUnit> selectDayTypeGroupSummaries(String type, LocalDate start, LocalDate end) {
+        Aggregation aggregation = newAggregation(TypeSummaryGroupSelect.matchOperation(start, end), TypeSummaryGroupSelect.groupOperation());
+        AggregationResults<DayTypeGroupSummaryUnit> results = mongoTemplate.aggregate(aggregation, type, DayTypeGroupSummaryUnit.class);
+        return results.getMappedResults();
     }
 
     public List<DayDurationUnit> selectRangeDurations(String start, String end, Boolean showAll) {
         if (showAll != null && showAll) {
-            return selectRangeDurations(projectionOperation(), groupOperation(), sortOperation());
+            return selectRangeDurations(RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
         }
         if (StringUtils.isEmpty(start) && StringUtils.isEmpty(end)) {
             return selectRangeDurations();
@@ -71,7 +85,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     }
 
     private List<DayDurationUnit> selectRangeDurations(LocalDate startDay, LocalDate endDay) {
-        return selectRangeDurations(matchOperation(startDay, endDay), projectionOperation(), groupOperation(), sortOperation());
+        return selectRangeDurations(RangeDurationSelect.matchOperation(startDay, endDay), RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
     }
 
     private List<DayDurationUnit> selectRangeDurations() {
@@ -85,31 +99,50 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         return results.getMappedResults();
     }
 
-    private MatchOperation matchOperation(LocalDate startDay, LocalDate endDay) {
-        return match(Criteria.where("startTime")
-                .gte(DateHelper.toDate(startDay))
-                .lt(DateHelper.toDate(endDay))
-        );
+    private static class RangeDurationSelect {
+        static MatchOperation matchOperation(LocalDate startDay, LocalDate endDay) {
+            return match(Criteria.where("startTime")
+                    .gte(DateHelper.toDate(startDay))
+                    .lt(DateHelper.toDate(endDay))
+            );
+        }
+
+        static ProjectionOperation projectionOperation() {
+            return project()
+                    .andExpression("year(startTime)").as("year")
+                    .andExpression("month(startTime)").as("month")
+                    .andExpression("dayOfMonth(startTime)").as("day")
+                    .andExpression("duration").as("duration");
+        }
+
+        static GroupOperation groupOperation() {
+            return group(
+                    fields()
+                            .and("year")
+                            .and("month")
+                            .and("day")
+            ).sum("duration").as("total");
+        }
+
+        static SortOperation sortOperation() {
+            return sort(by(asc("year"), asc("month"), asc("day")));
+        }
     }
 
-    private ProjectionOperation projectionOperation() {
-        return project()
-                .andExpression("year(startTime)").as("year")
-                .andExpression("month(startTime)").as("month")
-                .andExpression("dayOfMonth(startTime)").as("day")
-                .andExpression("duration").as("duration");
+    private static class TypeSummaryGroupSelect {
+        static MatchOperation matchOperation(LocalDate startDay, LocalDate endDay) {
+            return match(Criteria.where("day")
+                    .gte(DateHelper.toDate(startDay))
+                    .lte(DateHelper.toDate(endDay))
+            );
+        }
+
+        static GroupOperation groupOperation() {
+            return group(
+                    fields().and("name")
+            ).sum("totalSeconds").as("totalSeconds");
+        }
     }
 
-    private GroupOperation groupOperation() {
-        return group(
-                fields()
-                        .and("year")
-                        .and("month")
-                        .and("day")
-        ).sum("duration").as("total");
-    }
 
-    private SortOperation sortOperation() {
-        return sort(by(asc("year"), asc("month"), asc("day")));
-    }
 }

@@ -1,6 +1,7 @@
 const API_DOMAIN = "";
 const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
 window.projects = [];
+const CHART_WIDTH = 1000;
 
 function groupBy(list, keyGetter) {
     const map = new Map();
@@ -51,21 +52,11 @@ function getEveryProjectDayDurations(data) {
     return duMap;
 }
 
-let durationChart = new G2.Chart({
-    container: 'durations',
-    forceFit: false,
-    height: 300,
-    width: 1000,
-    padding: {top: 20, right: 30, bottom: 20, left: 300},
-    theme: 'default'
-});
-let activityChart = new G2.Chart({
-    container: 'coding-activity',
-    forceFit: false,
-    height: 500,
-    width: 1000,
-    padding: {top: 20, right: 30, bottom: 20, left: 80}
-});
+let durationChart;
+let activityChart;
+let circleGroupEditorChart;
+let circleGroupLanguageChart;
+let circleGroupSystemChart;
 
 function getDayDurations(date) {
     let data = [];
@@ -148,6 +139,14 @@ function initDurations(date) {
     if (!window.projects) {
         window.projects = [];
     }
+    durationChart = new G2.Chart({
+        container: 'durations',
+        forceFit: false,
+        height: 300,
+        width: CHART_WIDTH,
+        padding: {top: 20, right: 30, bottom: 20, left: 300},
+        theme: 'default'
+    });
     let data = getDayDurations(date);
     durationChart.source(data, {
         range: {
@@ -163,11 +162,33 @@ function initDurations(date) {
     durationChart.render();
 }
 
+function activeChartDataView(projects) {
+    var ads = new DataSet();
+    var adv = ads.createView().source(projects);
+    adv.transform({
+        type: 'map',
+        callback(row) { // 加工数据后返回新的一行，默认返回行数据本身
+            if (window.projects.indexOf(row.name) < 0) {
+                window.projects.push(row.name);
+            }
+            row.index = window.projects.indexOf(row.name);
+            row.duration = row.totalSeconds / 3600;
+            return row;
+        }
+    }).transform({
+        type: 'sort-by',
+        fields: ['day', 'duration'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
+        order: 'DESC'        // 默认为 ASC，DESC 则为逆序
+    });
+    return adv;
+}
+
 function initSummaries(start, end) {
     if (!window.projects) {
         window.projects = [];
     }
     let summaries = getSummaries(start, end);
+    activityChart = createActivityChart();
     var ads = new DataSet();
     var adv = ads.createView().source(summaries.projects);
     adv.transform({
@@ -185,22 +206,49 @@ function initSummaries(start, end) {
         fields: ['day', 'duration'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
         order: 'DESC'        // 默认为 ASC，DESC 则为逆序
     });
-    //https://github.com/antvis/g2/issues/574
-    activityChart.source(adv);
-    activityChart.axis('day', {
-        label: {
-            formatter: function formatter(day) {
-                return day;
-            }
+    let dayMap = groupBy(summaries.projects, p => p.day);
+    let size = CHART_WIDTH * 0.9 / dayMap.size;
+    let tickCount = dayMap.size < 15 ? dayMap.size + 1 : 8;
+    activityChart.source(adv, {
+        day: {
+            type: 'timeCat', // 声明该数据的类型
+            tickCount: tickCount
         }
     });
+    activityChart.legend(false);
     activityChart.interval().tooltip('name*totalSeconds', function (name, totalSeconds) {
         return {
             name: name,
             value: formatDurations(totalSeconds)
         };
-    }).position('day*duration').size(40).color('name');
+    }).position('day*duration').size(size).color('name').adjust([{
+        type: 'stack',
+    }]);
     activityChart.render();
+    circleGroupEditorChart = createCircleChart('group-editor');
+    circleGroupLanguageChart = createCircleChart('group-language');
+    circleGroupSystemChart = createCircleChart('group-system');
+    initDayTypeCircleChart(circleGroupEditorChart, summaries.editors);
+    initDayTypeCircleChart(circleGroupLanguageChart, summaries.languages);
+    initDayTypeCircleChart(circleGroupSystemChart, summaries.operatingSystems);
+}
+
+function createActivityChart() {
+    return new G2.Chart({
+        container: 'coding-activity',
+        forceFit: false,
+        height: 360,
+        width: CHART_WIDTH
+    });
+}
+
+function createCircleChart(id) {
+    return new G2.Chart({
+        container: id,
+        forceFit: false,
+        height: 300,
+        width: 300
+    });
 }
 
 function initDayMap(start, end, showAll) {
@@ -217,6 +265,7 @@ function initDayMap(start, end, showAll) {
         },
 
         visualMap: {
+            show: false,
             min: 0,
             max: 24,
             calculable: true,
@@ -236,7 +285,7 @@ function initDayMap(start, end, showAll) {
                 monthLabel: {
                     nameMap: 'cn'
                 },
-                cellSize: [20, 20]
+                cellSize: [15, 15]
             }],
 
         series: [{
@@ -253,4 +302,59 @@ function initDayMap(start, end, showAll) {
 function updateDurations(date) {
     let data = getDayDurations(date);
     durationChart.changeData(data);
+}
+
+function updateSummaries(start, end) {
+    if (activityChart) {
+        activityChart.destroy()
+    }
+    circleGroupEditorChart.destroy();
+    circleGroupLanguageChart.destroy();
+    circleGroupSystemChart.destroy();
+    initSummaries(start, end);
+}
+
+function initDayTypeCircleChart(chart, data) {
+    var ds = new DataSet();
+    var dv = ds.createView().source(data);
+    dv.transform({
+        type: 'percent',
+        field: 'totalSeconds',
+        dimension: 'id',
+        as: 'percent'
+    });
+    chart.source(dv);
+    chart.legend(false);
+    chart.coord('theta');
+    chart.tooltip({
+        showTitle: false
+    });
+
+    formatDurationAndPercent = function (totalSeconds, percent) {
+        let hour = totalSeconds / 3600.0;
+        return hour.toFixed(2) + '小时(' + percent + ')';
+    };
+    chart.intervalStack().position('totalSeconds').color('id').opacity(1).label('percent', {
+        offset: -20,
+        textStyle: {
+            fill: 'white',
+            fontSize: 12,
+            shadowBlur: 2,
+            shadowColor: 'rgba(0, 0, 0, .45)'
+        },
+        formatter: function formatter(val) {
+            let p = parseInt(val * 100);
+            if (p < 3) {
+                return " ";
+            }
+            return p + '%';
+        }
+    }).tooltip('id*totalSeconds*percent', function (id, totalSeconds, percent) {
+        percent = percent.toFixed(4) * 100 + '%';
+        return {
+            name: id,
+            value: formatDurationAndPercent(totalSeconds, percent)
+        };
+    });
+    chart.render();
 }

@@ -1,7 +1,6 @@
 package com.wf2311.wakatime.sync.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.wf2311.wakatime.sync.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -12,14 +11,9 @@ import java.util.List;
  */
 @Data
 public class ShowSummaryData {
-    private List<DayCategoryEntity> categories;
-    private List<DayDependencyEntity> dependencies;
-    private List<DayEditorEntity> editors;
-    private List<DayEntityEntity> entities;
-    @JSONField(name = "grand_total")
-    private List<DayGrandTotalEntity> grandTotal;
-    private List<DayLanguageEntity> languages;
+    private List<DayTypeGroupSummaryUnit> editors;
+    private List<DayTypeGroupSummaryUnit> languages;
     @JSONField(name = "operating_systems")
-    private List<DayOperateSystemEntity> operatingSystems;
-    private List<DayProjectEntity> projects;
+    private List<DayTypeGroupSummaryUnit> operatingSystems;
+    private List<DayProjectChartUnit> projects;
 }

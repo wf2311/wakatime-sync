@@ -10,75 +10,197 @@
     </style>
 </head>
 <body>
-<div id="app">
-    <div>每日项目持续时间图：</div>
+<div id="app" style="z-index: 0">
     <template>
-        <div class="block">
-            <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations" circle></el-button>
-            <el-date-picker v-model="durationDay" type="date" placeholder="选择日期" @change="updateDurations"
-                            format="yyyy-MM-dd">
-            </el-date-picker>
-            <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations" circle></el-button>
+        <div>
+            <div>
+                <span>Duration</span>
+                <span>
+                <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
+                           circle></el-button>
+                <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
+                                :clearable="false"
+                                :editable="false"
+                                @change="updateDurationChart"
+                                :picker-options="durationTimeOptions">
+                </el-date-picker>
+                <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations"
+                           :disabled="nextBtnDisabled" circle></el-button>
+                </span>
+            </div>
+            <div id="durations"></div>
+        </div>
+        <div>
+            <div>
+                <span>Activity</span>
+                <span>
+                    <el-date-picker
+                            v-model="rangeDays"
+                            type="daterange"
+                            align="right"
+                            :clearable="false"
+                            :editable="false"
+                            unlink-panels
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            @change="updateSummaryCharts"
+                            :picker-options="rangeTimeOptions">
+                    </el-date-picker>
+                </span>
+            </div>
+            <div id="coding-activity"></div>
+            <el-row>
+                <el-col :span="8">
+                    <div>Editors</div>
+                    <div id="group-editor"></div>
+                </el-col>
+                <el-col :span="8">
+                    <div>Languages</div>
+                    <div id="group-language"></div>
+                </el-col>
+                <el-col :span="8">
+                    <div>System</div>
+                    <div id="group-system"></div>
+                </el-col>
+            </el-row>
+        </div>
+        <div>
+            <div>
+                <span>Calendar</span>
+                <span>
+                    <el-switch
+                            v-model="showAllTime"
+                            active-text="全部时间"
+                            inactive-text="最近一年" @change="updateDayMapChart">
+                    </el-switch>
+                </span>
+            </div>
+            <div id="day-map" style="height:800px;"></div>
         </div>
     </template>
 </div>
-<div id="durations"></div>
-<div>最近两周项目活动情况：</div>
-<div id="coding-activity"></div>
-<div>最近一年每日编码耗时情况：</div>
-<div id="day-map" style="height:800px;"></div>
-
 <script>/*Fixing iframe window.innerHeight 0 issue in Safari*/
 document.body.clientHeight;</script>
-<script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-<script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.4.1/dist/g2.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.4.10/dist/g2.min.js"></script>
 <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/echarts/4.1.0/echarts.min.js"></script>
 <script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
 <script src="https://cdn.bootcss.com/moment-duration-format/2.2.2/moment-duration-format.min.js"></script>
 <script th:src="@{/js/wakatime.js}"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script>
+
+    function yesterday() {
+        return moment(formatDay(moment().subtract(1, 'd')));
+    }
+
     var vm = new Vue({
         el: '#app',
         created() {
-            let end = formatDay(moment().subtract(1, 'd'));
-            this.loadDurations();
-            initSummaries(formatDay(moment().subtract(14, 'd')), end);
-            initDayMap(formatDay(moment().subtract(1, 'y')), end, false);
+            // this.init();
         },
         data() {
             return {
-                durationDay: ''
+                durationTimeOptions: {
+                    disabledDate: (time) => {
+                        return moment(time) > yesterday();
+                    }
+                },
+                rangeTimeOptions: {
+                    disabledDate: (time) => {
+                        return moment(time) > yesterday();
+                    },
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(7, 'd');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近两周',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(14, 'd');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(1, 'M');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(3, 'M');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一年',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(1, 'y');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                },
+                nextBtnDisabled: true,
+                durationDay: yesterday(),
+                rangeDays: [moment().subtract(10, 'd'), yesterday()],
+                dayMapStartDay: formatDay(moment().subtract(1, 'y')),
+                dayMapEndDay: formatDay(yesterday()),
+                showAllTime: false,
             }
         }, methods: {
+            init: function () {
+                this.loadDurations();
+                initSummaries(formatDay(this.rangeDays[0]), formatDay(this.rangeDays[1]));
+                this.updateDayMapChart();
+            },
             loadDurations: function () {
-                if (!this.durationDay) {
-                    let now = moment();
-                    console.info(now);
-                    this.durationDay = now.subtract(1, 'd');
-                }
                 initDurations(this.formatDurationDate());
             },
-            updateDurations: function () {
+            updateDurationChart: function () {
                 this.durationDay = moment(this.durationDay);
                 updateDurations(this.formatDurationDate());
+                this.updateDurationNextBtnStatus();
             },
             preDayDurations: function () {
                 this.durationDay = moment(this.durationDay.subtract(1, 'd'));
                 updateDurations(this.formatDurationDate());
+                this.updateDurationNextBtnStatus();
             },
             nextDayDurations: function () {
                 this.durationDay = moment(this.durationDay.add(1, 'd'));
                 updateDurations(this.formatDurationDate());
+                this.updateDurationNextBtnStatus();
+            },
+            updateSummaryCharts: function () {
+                updateSummaries(formatDay(this.rangeDays[0]), formatDay(this.rangeDays[1]));
+                this.updateDurationNextBtnStatus();
+            },
+            updateDurationNextBtnStatus: function () {
+                console.info(this.formatDurationDate());
+                this.nextBtnDisabled = this.durationDay >= yesterday()
+            },
+            updateDayMapChart: function () {
+                initDayMap(this.dayMapStartDay, this.dayMapEndDay, this.showAllTime);
             },
             formatDurationDate() {
                 return formatDay(this.durationDay);
             }
         }
     });
+    $(function () {
+        vm.init();
+    })
 </script>
 </body>
 </html>
