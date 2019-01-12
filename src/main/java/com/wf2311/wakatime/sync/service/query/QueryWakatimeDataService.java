@@ -1,10 +1,7 @@
 package com.wf2311.wakatime.sync.service.query;
 
 import com.wf2311.jfeng.time.DateHelper;
-import com.wf2311.wakatime.sync.domain.DayDurationUnit;
-import com.wf2311.wakatime.sync.domain.DayProjectChartUnit;
-import com.wf2311.wakatime.sync.domain.DayTypeGroupSummaryUnit;
-import com.wf2311.wakatime.sync.domain.ShowSummaryData;
+import com.wf2311.wakatime.sync.domain.vo.*;
 import com.wf2311.wakatime.sync.entity.DayProjectEntity;
 import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.repository.DurationRepository;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,23 +34,33 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     @Resource
     private MongoTemplate mongoTemplate;
 
-    public List<DurationEntity> selectDayDuration(String date) {
+    public List<DayDurationVo> selectDayDuration(String date) {
         return findDayDurationData(DateHelper.parse(date).toLocalDate());
     }
 
-    private List<DurationEntity> findDayDurationData(LocalDate day) {
-        return durationRepository.queryByDay(day);
+    private List<DayDurationVo> findDayDurationData(LocalDate day) {
+        List<DurationEntity> list = durationRepository.queryByDay(day);
+        if (list.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return list.stream().map(d -> {
+            DayDurationVo v = new DayDurationVo();
+            v.setDuration(d.getDuration());
+            v.setProject(d.getProject());
+            v.setStartTime(d.getStartTime());
+            return v;
+        }).collect(Collectors.toList());
     }
 
-    public ShowSummaryData selectSummaries(String startDay, String endDay) {
+    public SummaryDataVo selectSummaries(String startDay, String endDay) {
         LocalDate start = DateHelper.parse(startDay).toLocalDate();
         LocalDate end = DateHelper.parse(endDay).toLocalDate();
-        ShowSummaryData data = new ShowSummaryData();
+        SummaryDataVo data = new SummaryDataVo();
         List<DayProjectEntity> projects = dayProjectRepository.queryByDay(start, end);
-        List<DayProjectChartUnit> chartProjects = projects.stream().map(p -> {
-            DayProjectChartUnit u = new DayProjectChartUnit();
+        List<DayProjectChartVo> chartProjects = projects.stream().map(p -> {
+            DayProjectChartVo u = new DayProjectChartVo();
             u.setDay(p.getDay().toString());
-            u.setTotalSeconds(p.getTotalSeconds());
+            u.setSeconds(p.getTotalSeconds());
             u.setName(p.getName());
             return u;
         }).collect(Collectors.toList());
@@ -69,7 +77,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         return results.getMappedResults();
     }
 
-    public List<DayDurationUnit> selectRangeDurations(String start, String end, Boolean showAll) {
+    public List<DaySumVo> selectRangeDurations(String start, String end, Boolean showAll) {
         if (showAll != null && showAll) {
             return selectRangeDurations(RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
         }
@@ -84,18 +92,18 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         return selectRangeDurations(s.toLocalDate(), e.toLocalDate().plusDays(1));
     }
 
-    private List<DayDurationUnit> selectRangeDurations(LocalDate startDay, LocalDate endDay) {
+    private List<DaySumVo> selectRangeDurations(LocalDate startDay, LocalDate endDay) {
         return selectRangeDurations(RangeDurationSelect.matchOperation(startDay, endDay), RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
     }
 
-    private List<DayDurationUnit> selectRangeDurations() {
+    private List<DaySumVo> selectRangeDurations() {
         LocalDateTime now = LocalDateTime.now();
         return selectRangeDurations(now.minusYears(1).toLocalDate(), now.toLocalDate());
     }
 
-    private List<DayDurationUnit> selectRangeDurations(AggregationOperation... operations) {
+    private List<DaySumVo> selectRangeDurations(AggregationOperation... operations) {
         Aggregation aggregation = newAggregation(operations);
-        AggregationResults<DayDurationUnit> results = mongoTemplate.aggregate(aggregation, "duration", DayDurationUnit.class);
+        AggregationResults<DaySumVo> results = mongoTemplate.aggregate(aggregation, "duration", DaySumVo.class);
         return results.getMappedResults();
     }
 
@@ -140,7 +148,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         static GroupOperation groupOperation() {
             return group(
                     fields().and("name")
-            ).sum("totalSeconds").as("totalSeconds");
+            ).sum("totalSeconds").as("seconds");
         }
     }
 

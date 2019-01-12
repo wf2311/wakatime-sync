@@ -1,5 +1,5 @@
 const API_DOMAIN = "";
-const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
+// const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
 window.projects = [];
 const CHART_WIDTH = 1000;
 
@@ -77,12 +77,34 @@ function getDayDurations(date) {
     const day = moment(date);
 
     let duMap = getEveryProjectDayDurations(data);
+    if (duMap.size > 1) {
+        var t = [];
+        //todo duMap.get('Total') != null
+        let p = 'Total';
+        data.forEach(function (o) {
+            t.push({
+                project: p,
+                startTime: o.startTime,
+                duration: o.duration
+            })
+        });
+        t.forEach(function (o) {
+            data.push(o);
+        });
+        const ss = t.sum("duration");
+        let text = formatDurations(ss);
+        duMap.set(p, {
+            "duration": ss,
+            "text": text
+        });
+
+    }
 
     data.forEach(function (obj) {
         const start = moment(obj.startTime).unix() - day.unix();
         obj.range = [start / 3600, (obj.duration + start) / 3600];
         obj.text = obj.project + "  " + duMap.get(obj.project).text;
-        obj.index = window.projects.indexOf(obj.project) % 24;
+        // obj.index = window.projects.indexOf(obj.project) % 24;
     });
     durationChart.changeHeight(50 + duMap.size * 24);
     return data;
@@ -172,7 +194,7 @@ function activeChartDataView(projects) {
                 window.projects.push(row.name);
             }
             row.index = window.projects.indexOf(row.name);
-            row.duration = row.totalSeconds / 3600;
+            row.duration = row.seconds / 3600;
             return row;
         }
     }).transform({
@@ -198,7 +220,7 @@ function initSummaries(start, end) {
                 window.projects.push(row.name);
             }
             row.index = window.projects.indexOf(row.name);
-            row.duration = row.totalSeconds / 3600;
+            row.duration = row.seconds / 3600;
             return row;
         }
     }).transform({
@@ -216,10 +238,10 @@ function initSummaries(start, end) {
         }
     });
     activityChart.legend(false);
-    activityChart.interval().tooltip('name*totalSeconds', function (name, totalSeconds) {
+    activityChart.interval().tooltip('name*seconds', function (name, seconds) {
         return {
             name: name,
-            value: formatDurations(totalSeconds)
+            value: formatDurations(seconds)
         };
     }).position('day*duration').size(size).color('name').adjust([{
         type: 'stack',
@@ -319,7 +341,7 @@ function initDayTypeCircleChart(chart, data) {
     var dv = ds.createView().source(data);
     dv.transform({
         type: 'percent',
-        field: 'totalSeconds',
+        field: 'seconds',
         dimension: 'id',
         as: 'percent'
     });
@@ -330,11 +352,11 @@ function initDayTypeCircleChart(chart, data) {
         showTitle: false
     });
 
-    formatDurationAndPercent = function (totalSeconds, percent) {
-        let hour = totalSeconds / 3600.0;
+    formatDurationAndPercent = function (seconds, percent) {
+        let hour = seconds / 3600;
         return hour.toFixed(2) + '小时(' + percent + ')';
     };
-    chart.intervalStack().position('totalSeconds').color('id').opacity(1).label('percent', {
+    chart.intervalStack().position('seconds').color('id').opacity(1).label('percent', {
         offset: -20,
         textStyle: {
             fill: 'white',
@@ -349,11 +371,11 @@ function initDayTypeCircleChart(chart, data) {
             }
             return p + '%';
         }
-    }).tooltip('id*totalSeconds*percent', function (id, totalSeconds, percent) {
+    }).tooltip('id*seconds*percent', function (id, seconds, percent) {
         percent = percent.toFixed(4) * 100 + '%';
         return {
             name: id,
-            value: formatDurationAndPercent(totalSeconds, percent)
+            value: formatDurationAndPercent(seconds, percent)
         };
     });
     chart.render();

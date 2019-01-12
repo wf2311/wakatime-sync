@@ -1,4 +1,4 @@
-package com.wf2311.wakatime.sync.domain;
+package com.wf2311.wakatime.sync.domain.vo;
 
 import lombok.Data;
 
@@ -7,9 +7,9 @@ import lombok.Data;
  * @since 2019-01-12 17:19.
  */
 @Data
-public class DayProjectChartUnit {
+public class DayProjectChartVo {
     private String name;
     private String day;
-    private Integer totalSeconds;
+    private Integer seconds;
 
 }

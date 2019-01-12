@@ -1,4 +1,4 @@
-package com.wf2311.wakatime.sync.domain;
+package com.wf2311.wakatime.sync.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
  * @since 2019-01-10 23:45.
  */
 @Data
-public class DayDurationUnit {
+public class DaySumVo {
     private Integer year;
     @JsonIgnore
     private Integer month;

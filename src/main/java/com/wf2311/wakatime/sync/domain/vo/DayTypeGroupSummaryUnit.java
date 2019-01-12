@@ -1,4 +1,4 @@
-package com.wf2311.wakatime.sync.domain;
+package com.wf2311.wakatime.sync.domain.vo;
 
 import lombok.Data;
 
@@ -9,5 +9,5 @@ import lombok.Data;
 @Data
 public class DayTypeGroupSummaryUnit {
     private String id;
-    private Integer totalSeconds;
+    private Integer seconds;
 }

@@ -1,4 +1,4 @@
-package com.wf2311.wakatime.sync.domain;
+package com.wf2311.wakatime.sync.domain.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -10,10 +10,10 @@ import java.util.List;
  * @since 2019-01-10 23:10.
  */
 @Data
-public class ShowSummaryData {
+public class SummaryDataVo {
     private List<DayTypeGroupSummaryUnit> editors;
     private List<DayTypeGroupSummaryUnit> languages;
     @JSONField(name = "operating_systems")
     private List<DayTypeGroupSummaryUnit> operatingSystems;
-    private List<DayProjectChartUnit> projects;
+    private List<DayProjectChartVo> projects;
 }

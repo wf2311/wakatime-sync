@@ -1,8 +1,8 @@
 package com.wf2311.wakatime.sync.controller.api;
 
-import com.wf2311.wakatime.sync.domain.DayDurationUnit;
 import com.wf2311.wakatime.sync.domain.base.JsonResult;
-import com.wf2311.wakatime.sync.entity.DurationEntity;
+import com.wf2311.wakatime.sync.domain.vo.DayDurationVo;
+import com.wf2311.wakatime.sync.domain.vo.DaySumVo;
 import com.wf2311.wakatime.sync.service.query.QueryWakatimeDataService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ public class WakatimeApi {
     private QueryWakatimeDataService queryWakatimeDataService;
 
     @GetMapping("/durations")
-    public JsonResult<List<DurationEntity>> durations(String date) {
+    public JsonResult<List<DayDurationVo>> durations(String date) {
         return JsonResult.ok(queryWakatimeDataService.selectDayDuration(date));
     }
 
@@ -32,7 +32,7 @@ public class WakatimeApi {
     }
 
     @GetMapping("/range/durations")
-    public JsonResult<List<DayDurationUnit>> rangeDurations(String start, String end, Boolean showAll) {
-        return JsonResult.ok(queryWakatimeDataService.selectRangeDurations(start, end,showAll));
+    public JsonResult<List<DaySumVo>> rangeDurations(String start, String end, Boolean showAll) {
+        return JsonResult.ok(queryWakatimeDataService.selectRangeDurations(start, end, showAll));
     }
 }
