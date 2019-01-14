@@ -4,17 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,height=device-height">
     <title>WakaTime</title>
-    <style>::-webkit-scrollbar {
+    <style>
+    ::-webkit-scrollbar {
         display: none;
+    }
+    .graph-item {
+        margin: 15px;
+        padding: 25px;
+        background: #2f353c;
+        color: #fff;
+        border-radius: 3px;
+    }
+    .graph-head {
+        display: flex;
+        justify-content: center;
+        vertical-align: middle;
+        margin-bottom: 20px;
+    }
+    .graph-head > span {
+        font-size: 20px;
+        font-weight: 700;
+    }
+    .graph-title {
+        line-height: 2;
+    }
+    .graph-head > span:first-child {
+        margin-right: 20px;
+    }
+    #coding-activity > div {
+        text-align: center;
+    }
+    #coding-activity > div canvas {
+        display: inline-block;
+    }
+    .el-switch__label span {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: .8;
+    }
+    .el-switch__label.is-active span {
+        color: #409EFF;
+        margin-right: 0;
     }
     </style>
 </head>
 <body>
 <div id="app" style="z-index: 0">
     <template>
-        <div>
-            <div>
-                <span>Duration</span>
+        <div class="graph-item">
+            <div class="graph-head">
+                <span class="graph-title">Duration</span>
                 <span>
                 <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
                            :disabled="prevBtnDisabled" circle></el-button>
@@ -30,9 +70,9 @@
             </div>
             <div id="durations"></div>
         </div>
-        <div>
-            <div>
-                <span>Activity</span>
+        <div class="graph-item">
+            <div class="graph-head">
+                <span class="graph-title">Activity</span>
                 <span>
                     <el-date-picker
                             v-model="rangeDays"
@@ -69,8 +109,8 @@
                 </el-col>
             </el-row>
         </div>
-        <div>
-            <div>
+        <div class="graph-item">
+            <div class="graph-head">
                 <span>Calendar</span>
                 <span>
                     <el-switch
