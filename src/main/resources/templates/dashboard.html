@@ -17,7 +17,7 @@
                 <span>Duration</span>
                 <span>
                 <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
-                           circle></el-button>
+                           :disabled="prevBtnDisabled" circle></el-button>
                 <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
                                 :clearable="false"
                                 :editable="false"
@@ -182,6 +182,7 @@ document.body.clientHeight;</script>
                         }
                     }]
                 },
+                prevBtnDisabled: false,
                 nextBtnDisabled: true,
                 durationDay: yesterday(),
                 rangeDays: [moment().subtract(10, 'd'), yesterday()],
@@ -201,25 +202,25 @@ document.body.clientHeight;</script>
             updateDurationChart: function () {
                 this.durationDay = moment(this.durationDay);
                 updateDurations(this.formatDurationDate());
-                this.updateDurationNextBtnStatus();
+                this.updateDurationBtnStatus();
             },
             preDayDurations: function () {
                 this.durationDay = moment(this.durationDay.subtract(1, 'd'));
                 updateDurations(this.formatDurationDate());
-                this.updateDurationNextBtnStatus();
+                this.updateDurationBtnStatus();
             },
             nextDayDurations: function () {
                 this.durationDay = moment(this.durationDay.add(1, 'd'));
                 updateDurations(this.formatDurationDate());
-                this.updateDurationNextBtnStatus();
+                this.updateDurationBtnStatus();
             },
             updateSummaryCharts: function () {
                 updateSummaries(formatDay(this.rangeDays[0]), formatDay(this.rangeDays[1]));
-                this.updateDurationNextBtnStatus();
+                this.updateDurationBtnStatus();
             },
-            updateDurationNextBtnStatus: function () {
-                console.info(this.formatDurationDate());
-                this.nextBtnDisabled = this.durationDay >= yesterday()
+            updateDurationBtnStatus: function () {
+                this.nextBtnDisabled = this.durationDay >= yesterday();
+                this.prevBtnDisabled = this.durationDay <= START_DAY;
             },
             updateDayMapChart: function () {
                 initDayMap(this.dayMapStartDay, this.dayMapEndDay, this.showAllTime);
