@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--设置log4j2的自身log级别为warn-->
+<!--设置log4j2的自身log级别为error-->
 <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
 <!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，
     当设置成trace时，你会看到log4j2内部各种详细输出-->
 <!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
-<configuration status="warn" monitorInterval="30">
+<configuration status="error" monitorInterval="30">
 
     <Properties>
         <Property scope="context" name="appName" value="wakatime-log"/>
@@ -93,6 +93,16 @@
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="syncLogFail" fileName="${logDir}/sync-fail.log"
+                     filePattern="${logDir}/$${date:yyyy-MM}/sync-fail-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
 
         <RollingFile name="otherLog" fileName="${logDir}/other-info.log"
                      filePattern="${logDir}/$${date:yyyy-MM}/other-info-%d{yyyy-MM-dd}-%i.log">
@@ -118,6 +128,10 @@
             <appender-ref ref="other"/>
         </Logger>
         <Logger name="syncLog" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="syncLog"/>
+        </Logger>
+        <Logger name="syncLogFail" level="info" additivity="false">
             <appender-ref ref="Console"/>
             <appender-ref ref="syncLog"/>
         </Logger>

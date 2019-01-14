@@ -20,25 +20,30 @@
   
   本项目通过 wakatime 提供的 API 接口，可以把自己的 wakatime 数据保存在自己的数据库库，然后利用图表插件展示出来，目前已完成三种类型的图表展示：
 - 每日项目持续时间图：
-  ![每日项目持续时间图](https://file.wf2311.com/images/20190111132136.png)
-- 最近两周项目活动情况：
-  ![最近两周项目活动情况](https://file.wf2311.com/images/20190111132651.png)
-- 最近一年每日编码耗时情况：
-  ![最近一年每日编码耗时情况](https://file.wf2311.com/images/20190111132759.png)
+  ![每日项目持续时间图](https://file.wf2311.com/images/20190114104627.png)
+- 时间范围内活动情况：
+  ![时间范围内活动情况-1](https://file.wf2311.com/images/20190114104834.png)
+  ![时间范围内活动情况-2](https://file.wf2311.com/images/20190114104945.png)
+- 每日编码耗时日历图：
+  ![每日编码耗时日历图](https://file.wf2311.com/images/20190111132759.png)
   
   不过因为本人能力有限，目前页面图表排版很差,还需要请他人帮忙优化。
 
 ### 所用技术
 - 后端： JDK1.8、SpringBoot、Jodd-HTTP、Thymeleaf
-- 数据库： MongoDB
+- 数据库： MySQL 5.7
 - 前端：Moment.js、ElementUI、AntV-G2 、Echarts 
 
 ### 使用方法
-替换或设置好`src/main/resources/application.yml`配置文件中的`wakatime.app.key`和`mongodb.wakatime-sync.uri`，采用maven打包的方式安装即可，支持Docker方式安装。
+替换或设置好`src/main/resources/application.yml`配置文件中的`wakatime.app.key`和`spring.datasource.*`相关数据库配置，采用maven打包的方式安装即可，支持Docker方式安装。
+
+数据库建库脚本位于`sql/wakatime_sync.sql`中。
+
+数据库使用 MongoDB 的版本位于分支 [mongdb](https://github.com/wf2311/wakatime-sync/tree/mongdb) 中
 
 示例地址：[https://wakatime.wangfeng.pro/](https://wakatime.wangfeng.pro/)
 
-> tips: 如果你一直在使用 wakatime ，如果想使用本项目同步你所有的历史数据，可以在官网上试用付费版的方式获得1个月(还是半个月？)的付费版功能，然后通过本项目来同步所有的历史数据：`POST /api/v1/sync`。
+> tips: 如果你一直在使用 wakatime ，如果想使用本项目同步你所有的历史数据，可以在官网上试用团队版的方式获得1个月(还是半个月？)的付费版功能或者是订阅一个月的付费版，然后通过本项目来同步所有的历史数据：`POST /api/v1/sync` 或参见项目中的测试方法。
 ### TODO
 - [ ] 页面样式优化；
 - [ ] 数据同步成功消息通知；

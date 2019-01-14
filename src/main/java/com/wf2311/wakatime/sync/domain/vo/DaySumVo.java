@@ -1,6 +1,5 @@
 package com.wf2311.wakatime.sync.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,15 +10,6 @@ import java.time.LocalDate;
  */
 @Data
 public class DaySumVo {
-    private Integer year;
-    @JsonIgnore
-    private Integer month;
-    @JsonIgnore
-    private Integer day;
     private LocalDate date;
-    private Double total;
-
-    public LocalDate getDate() {
-        return LocalDate.of(year, month, day);
-    }
+    private Integer total;
 }

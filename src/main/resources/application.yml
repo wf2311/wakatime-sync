@@ -2,22 +2,25 @@ server:
   port: 3040
 wakatime:
   secret-api-key: @wakatime.app.key@  # wakatime app key
+  start-day: 2016-02-01
 logging:
+  level:
+    root: info
   config: classpath:log4j2-spring.xml
 spring:
   application:
-    name: wakatime-sync
+    name: wakatime-syncLastDay
   thymeleaf:
     cache: false
     mode: HTML
     encoding: UTF-8
     suffix: .html
     prefix: classpath:/templates/
-  redis:
-    host: @redis.host@
-    port: '@redis.port@'
-    password: @redis.password@
-  data:
-    mongodb:
-      uri: @mongodb.wakatime-sync.uri@  # MongoDB数据url
-
+#  redis:
+#    host: @redis.host@
+#    port: '@redis.port@'
+#    password: @redis.password@
+  datasource:
+    url: @jdbc.wakatime-sync.url@
+    password: @jdbc.wakatime-sync.password@
+    username: @jdbc.wakatime-sync.username@

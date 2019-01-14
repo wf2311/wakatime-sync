@@ -1,5 +1,7 @@
 package com.wf2311.wakatime.sync.service.sync;
 
+import com.wf2311.wakatime.sync.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import java.time.LocalDate;
  * @since 2019-01-10 16:21.
  */
 @Service
+@Slf4j
 public class SyncService {
 
     @Resource
@@ -19,24 +22,32 @@ public class SyncService {
     private HeartBeatService heartBeatService;
     @Resource
     private DaySummaryService daySummaryService;
-    @Transactional(rollbackFor = Exception.class)
+
+    //    @Transactional(rollbackFor = Exception.class)
     public void sync(LocalDate start, LocalDate end) {
         LocalDate day = start;
         while (!day.isAfter(end)) {
-            heartBeatService.sync(day);
-            durationService.sync(day);
-            daySummaryService.sync(day);
+            try {
+                syncDay(day);
+            } catch (Exception e) {
+                CommonUtil.syncLogFail().error(e.getMessage(), e);
+            }
             day = day.plusDays(1);
         }
     }
 
+    public void syncDay(LocalDate day) {
+        heartBeatService.sync(day);
+        durationService.sync(day);
+        daySummaryService.sync(day);
+    }
+
     @Transactional(rollbackFor = Exception.class)
-    public void sync() {
+    public void syncLastDay() {
         LocalDate start = LocalDate.now().minusDays(1);
         sync(start, start);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void sync(int day) {
         LocalDate end = LocalDate.now().minusDays(1);
         LocalDate start = LocalDate.now().minusDays(day);

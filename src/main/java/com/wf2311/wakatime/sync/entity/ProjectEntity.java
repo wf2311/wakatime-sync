@@ -1,9 +1,9 @@
 package com.wf2311.wakatime.sync.entity;
 
+import com.wf2311.wakatime.sync.util.CommonUtil;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -11,13 +11,16 @@ import java.time.LocalDateTime;
  * @since 2019-01-10 14:15.
  */
 @Data
-@Document(collection = "project")
+@Entity
+@Table(name = "project")
 public class ProjectEntity {
     /**
      * 主键
      */
     @Id
-    private String id;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     /**
      * 名称
@@ -48,4 +51,9 @@ public class ProjectEntity {
      * 创建时间
      */
     private LocalDateTime createdTime;
+
+
+    public void setName(String name) {
+        this.name = CommonUtil.subStringIfOverLength(name, 50);
+    }
 }

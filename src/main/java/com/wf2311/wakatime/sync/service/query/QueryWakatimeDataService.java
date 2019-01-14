@@ -7,21 +7,19 @@ import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.repository.DurationRepository;
 import com.wf2311.wakatime.sync.service.AbstractDaySummaryService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.domain.Sort.Order.asc;
-import static org.springframework.data.domain.Sort.by;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
@@ -32,7 +30,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     @Resource
     private DurationRepository durationRepository;
     @Resource
-    private MongoTemplate mongoTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public List<DayDurationVo> selectDayDuration(String date) {
         return findDayDurationData(DateHelper.parse(date).toLocalDate());
@@ -53,8 +51,12 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     }
 
     public SummaryDataVo selectSummaries(String startDay, String endDay) {
+
         LocalDate start = DateHelper.parse(startDay).toLocalDate();
         LocalDate end = DateHelper.parse(endDay).toLocalDate();
+        if (start == null || end == null || start.isAfter(end)) {
+            throw new IllegalArgumentException();
+        }
         SummaryDataVo data = new SummaryDataVo();
         List<DayProjectEntity> projects = dayProjectRepository.queryByDay(start, end);
         List<DayProjectChartVo> chartProjects = projects.stream().map(p -> {
@@ -66,91 +68,53 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         }).collect(Collectors.toList());
         data.setProjects(chartProjects);
         data.setEditors(selectDayTypeGroupSummaries("day_editor", start, end));
+        data.setCategories(selectDayTypeGroupSummaries("day_category", start, end));
         data.setLanguages(selectDayTypeGroupSummaries("day_language", start, end));
         data.setOperatingSystems(selectDayTypeGroupSummaries("day_operating_system", start, end));
         return data;
     }
 
     private List<DayTypeGroupSummaryUnit> selectDayTypeGroupSummaries(String type, LocalDate start, LocalDate end) {
-        Aggregation aggregation = newAggregation(TypeSummaryGroupSelect.matchOperation(start, end), TypeSummaryGroupSelect.groupOperation());
-        AggregationResults<DayTypeGroupSummaryUnit> results = mongoTemplate.aggregate(aggregation, type, DayTypeGroupSummaryUnit.class);
-        return results.getMappedResults();
+        String sql = "select name,sum(total_seconds) as total from " + type + " where day >=:start and day <=:end group by name";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("start", start);
+        parameters.addValue("end", end);
+        return namedParameterJdbcTemplate.query(sql, parameters, new DayTypeGroupSummaryUnitMapper());
+    }
+
+    class DayTypeGroupSummaryUnitMapper implements RowMapper<DayTypeGroupSummaryUnit> {
+        @Override
+        public DayTypeGroupSummaryUnit mapRow(ResultSet resultSet, int i) throws SQLException {
+            DayTypeGroupSummaryUnit unit = new DayTypeGroupSummaryUnit();
+            unit.setId(resultSet.getString("name"));
+            unit.setSeconds(resultSet.getInt("total"));
+            return unit;
+        }
     }
 
     public List<DaySumVo> selectRangeDurations(String start, String end, Boolean showAll) {
-        if (showAll != null && showAll) {
-            return selectRangeDurations(RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
+        String sql = "select day,sum(total_seconds) as total from day_project";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        if (showAll == null || !showAll) {
+            LocalDateTime s = DateHelper.parse(start);
+            LocalDateTime e = StringUtils.isEmpty(end) ? LocalDateTime.now() : DateHelper.parse(end);
+            if (s.isAfter(e)) {
+                throw new IllegalArgumentException();
+            }
+            sql += " where day >=:start and day <=:end";
+            parameters.addValue("start", start);
+            parameters.addValue("end", end);
         }
-        if (StringUtils.isEmpty(start) && StringUtils.isEmpty(end)) {
-            return selectRangeDurations();
-        }
-        LocalDateTime s = DateHelper.parse(start);
-        LocalDateTime e = StringUtils.isEmpty(end) ? LocalDateTime.now() : DateHelper.parse(end);
-        if (s.isAfter(e)) {
-            throw new IllegalArgumentException();
-        }
-        return selectRangeDurations(s.toLocalDate(), e.toLocalDate().plusDays(1));
+        sql += " group by day";
+        return namedParameterJdbcTemplate.query(sql, parameters, new DaySumMapper());
     }
-
-    private List<DaySumVo> selectRangeDurations(LocalDate startDay, LocalDate endDay) {
-        return selectRangeDurations(RangeDurationSelect.matchOperation(startDay, endDay), RangeDurationSelect.projectionOperation(), RangeDurationSelect.groupOperation(), RangeDurationSelect.sortOperation());
-    }
-
-    private List<DaySumVo> selectRangeDurations() {
-        LocalDateTime now = LocalDateTime.now();
-        return selectRangeDurations(now.minusYears(1).toLocalDate(), now.toLocalDate());
-    }
-
-    private List<DaySumVo> selectRangeDurations(AggregationOperation... operations) {
-        Aggregation aggregation = newAggregation(operations);
-        AggregationResults<DaySumVo> results = mongoTemplate.aggregate(aggregation, "duration", DaySumVo.class);
-        return results.getMappedResults();
-    }
-
-    private static class RangeDurationSelect {
-        static MatchOperation matchOperation(LocalDate startDay, LocalDate endDay) {
-            return match(Criteria.where("startTime")
-                    .gte(DateHelper.toDate(startDay))
-                    .lt(DateHelper.toDate(endDay))
-            );
-        }
-
-        static ProjectionOperation projectionOperation() {
-            return project()
-                    .andExpression("year(startTime)").as("year")
-                    .andExpression("month(startTime)").as("month")
-                    .andExpression("dayOfMonth(startTime)").as("day")
-                    .andExpression("duration").as("duration");
-        }
-
-        static GroupOperation groupOperation() {
-            return group(
-                    fields()
-                            .and("year")
-                            .and("month")
-                            .and("day")
-            ).sum("duration").as("total");
-        }
-
-        static SortOperation sortOperation() {
-            return sort(by(asc("year"), asc("month"), asc("day")));
+    class DaySumMapper implements RowMapper<DaySumVo> {
+        @Override
+        public DaySumVo mapRow(ResultSet resultSet, int i) throws SQLException {
+            DaySumVo unit = new DaySumVo();
+            unit.setDate(resultSet.getTimestamp("day").toLocalDateTime().toLocalDate());
+            unit.setTotal(resultSet.getInt("total"));
+            return unit;
         }
     }
-
-    private static class TypeSummaryGroupSelect {
-        static MatchOperation matchOperation(LocalDate startDay, LocalDate endDay) {
-            return match(Criteria.where("day")
-                    .gte(DateHelper.toDate(startDay))
-                    .lte(DateHelper.toDate(endDay))
-            );
-        }
-
-        static GroupOperation groupOperation() {
-            return group(
-                    fields().and("name")
-            ).sum("totalSeconds").as("seconds");
-        }
-    }
-
-
 }

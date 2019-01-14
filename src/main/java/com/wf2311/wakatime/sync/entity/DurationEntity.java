@@ -1,9 +1,10 @@
 package com.wf2311.wakatime.sync.entity;
 
+import com.wf2311.wakatime.sync.util.CommonUtil;
+import com.wf2311.wakatime.sync.util.StringArrayConverter;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,28 +13,27 @@ import java.util.List;
  * @since 2019-01-10 14:15.
  */
 @Data
-@Document(collection = "duration")
+@Entity
+@Table(name = "duration")
 public class DurationEntity {
     /**
      * 主键
      */
     @Id
-    private String id;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     /**
      * 依赖
      */
+    @Convert(converter = StringArrayConverter.class)
     private List<String> dependencies;
 
     /**
      * 持续时间（秒）
      */
     private Double duration;
-
-    /**
-     * IS DEBUGGING
-     */
-    private Boolean isDebugging;
 
     /**
      * 所属项目名称
@@ -55,5 +55,10 @@ public class DurationEntity {
      * 创建时间
      */
     private LocalDateTime createdTime;
+
+
+    public void setProject(String project) {
+        this.project = CommonUtil.subStringIfOverLength(project, 50);
+    }
 
 }

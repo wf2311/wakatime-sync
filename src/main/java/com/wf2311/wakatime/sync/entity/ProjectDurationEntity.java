@@ -1,9 +1,10 @@
 package com.wf2311.wakatime.sync.entity;
 
+import com.wf2311.wakatime.sync.util.CommonUtil;
+import com.wf2311.wakatime.sync.util.StringArrayConverter;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,13 +13,16 @@ import java.util.List;
  * @since 2019-01-10 14:15.
  */
 @Data
-@Document(collection = "project_duration")
+@Entity
+@Table(name = "project_duration")
 public class ProjectDurationEntity {
     /**
      * 主键
      */
     @Id
-    private String id;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     /**
      * 分支
@@ -28,6 +32,7 @@ public class ProjectDurationEntity {
     /**
      * 依赖
      */
+    @Convert(converter = StringArrayConverter.class)
     private List<String> dependencies;
 
 
@@ -40,11 +45,6 @@ public class ProjectDurationEntity {
      * ENTITY
      */
     private String entity;
-
-    /**
-     * IS DEBUGGING
-     */
-    private Boolean isDebugging;
 
     /**
      * 语言
@@ -76,4 +76,24 @@ public class ProjectDurationEntity {
      * 创建时间
      */
     private LocalDateTime createdTime;
+
+
+    public void setBranch(String branch) {
+        this.branch = CommonUtil.subStringIfOverLength(branch, 20);
+    }
+    public void setEntity(String entity) {
+        this.entity = CommonUtil.subStringIfOverLength(entity, 255);
+    }
+
+    public void setLanguage(String language) {
+        this.language = CommonUtil.subStringIfOverLength(language, 20);
+    }
+
+    public void setProject(String project) {
+        this.project = CommonUtil.subStringIfOverLength(project, 50);
+    }
+
+    public void setType(String type) {
+        this.type = CommonUtil.subStringIfOverLength(type, 20);
+    }
 }

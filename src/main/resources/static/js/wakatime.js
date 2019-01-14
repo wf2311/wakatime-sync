@@ -1,7 +1,7 @@
 const API_DOMAIN = "";
 // const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
 window.projects = [];
-const CHART_WIDTH = 1000;
+const CHART_WIDTH = 1200;
 
 function groupBy(list, keyGetter) {
     const map = new Map();
@@ -56,6 +56,7 @@ let durationChart;
 let activityChart;
 let circleGroupEditorChart;
 let circleGroupLanguageChart;
+let circleGroupActionChart;
 let circleGroupSystemChart;
 
 function getDayDurations(date) {
@@ -229,7 +230,7 @@ function initSummaries(start, end) {
         order: 'DESC'        // 默认为 ASC，DESC 则为逆序
     });
     let dayMap = groupBy(summaries.projects, p => p.day);
-    let size = CHART_WIDTH * 0.9 / dayMap.size;
+    let size = CHART_WIDTH * 0.92 / dayMap.size;
     let tickCount = dayMap.size < 15 ? dayMap.size + 1 : 8;
     activityChart.source(adv, {
         day: {
@@ -249,9 +250,11 @@ function initSummaries(start, end) {
     activityChart.render();
     circleGroupEditorChart = createCircleChart('group-editor');
     circleGroupLanguageChart = createCircleChart('group-language');
+    circleGroupActionChart = createCircleChart('group-action');
     circleGroupSystemChart = createCircleChart('group-system');
     initDayTypeCircleChart(circleGroupEditorChart, summaries.editors);
     initDayTypeCircleChart(circleGroupLanguageChart, summaries.languages);
+    initDayTypeCircleChart(circleGroupActionChart, summaries.categories);
     initDayTypeCircleChart(circleGroupSystemChart, summaries.operatingSystems);
 }
 
@@ -332,6 +335,7 @@ function updateSummaries(start, end) {
     }
     circleGroupEditorChart.destroy();
     circleGroupLanguageChart.destroy();
+    circleGroupActionChart.destroy();
     circleGroupSystemChart.destroy();
     initSummaries(start, end);
 }
@@ -356,23 +360,24 @@ function initDayTypeCircleChart(chart, data) {
         let hour = seconds / 3600;
         return hour.toFixed(2) + '小时(' + percent + ')';
     };
-    chart.intervalStack().position('seconds').color('id').opacity(1).label('percent', {
-        offset: -20,
-        textStyle: {
-            fill: 'white',
-            fontSize: 12,
-            shadowBlur: 2,
-            shadowColor: 'rgba(0, 0, 0, .45)'
-        },
-        formatter: function formatter(val) {
-            let p = parseInt(val * 100);
-            if (p < 3) {
-                return " ";
+    chart.intervalStack().position('seconds').color('id').opacity(1)
+        .label('percent*id', {
+            offset: -5,
+            textStyle: {
+                fill: 'white',
+                fontSize: 11,
+                shadowBlur: 2,
+                shadowColor: 'rgba(0, 0, 0, .45)'
+            },
+            formatter: function formatter(percent, obj) {
+                let p = parseInt(percent * 100);
+                if (p < 3) {
+                    return " ";
+                }
+                return obj.point.id + '(' + p + '%)';
             }
-            return p + '%';
-        }
-    }).tooltip('id*seconds*percent', function (id, seconds, percent) {
-        percent = percent.toFixed(4) * 100 + '%';
+        }).tooltip('id*seconds*percent', function (id, seconds, percent) {
+        percent = (percent * 100).toFixed(2) + '%';
         return {
             name: id,
             value: formatDurationAndPercent(seconds, percent)

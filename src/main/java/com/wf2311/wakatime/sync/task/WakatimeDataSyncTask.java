@@ -23,6 +23,6 @@ public class WakatimeDataSyncTask {
      */
     @Scheduled(cron = "0 05 0 * * *")
     public void syncYesterday() {
-        syncService.sync();
+        syncService.syncLastDay();
     }
 }

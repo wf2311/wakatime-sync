@@ -7,19 +7,11 @@ import java.time.LocalDate;
  * @since 2019-01-10 14:14.
  */
 public interface BaseDayEntity {
-    String getId();
+    Long getId();
 
     String getName();
 
-    Integer getHours();
-
-    Integer getMinutes();
-
-    Integer getSeconds();
-
     Integer getTotalSeconds();
-
-    Double getPercent();
 
     LocalDate getDay();
 }

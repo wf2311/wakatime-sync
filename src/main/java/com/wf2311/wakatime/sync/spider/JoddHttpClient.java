@@ -25,7 +25,7 @@ public class JoddHttpClient {
                     .query("api_key", WakatimeProperties.SECRET_API_KEY)
                     .trustAllCerts(true)
                     .query(params)
-                    .timeout(1000 * 10)
+                    .timeout(1000 * 30)
                     .send();
             return response
                     .bodyText();

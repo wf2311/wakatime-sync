@@ -1,6 +1,5 @@
 package com.wf2311.wakatime.sync.domain.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 public class SummaryDataVo {
     private List<DayTypeGroupSummaryUnit> editors;
     private List<DayTypeGroupSummaryUnit> languages;
-    @JSONField(name = "operating_systems")
+    private List<DayTypeGroupSummaryUnit> categories;
     private List<DayTypeGroupSummaryUnit> operatingSystems;
     private List<DayProjectChartVo> projects;
 }
