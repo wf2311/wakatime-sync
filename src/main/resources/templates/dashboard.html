@@ -102,7 +102,12 @@ document.body.clientHeight;</script>
         return moment(formatDay(moment().subtract(1, 'd')));
     }
 
-    var vm = new Vue({
+    /**
+     * 起始时间，根据实际情况修改
+     */
+    const START_DAY = moment('2016-02-15');
+
+    let vm = new Vue({
         el: '#app',
         created() {
             // this.init();
@@ -111,12 +116,14 @@ document.body.clientHeight;</script>
             return {
                 durationTimeOptions: {
                     disabledDate: (time) => {
-                        return moment(time) > yesterday();
+                        let t = moment(time);
+                        return t > yesterday() || t < START_DAY;
                     }
                 },
                 rangeTimeOptions: {
                     disabledDate: (time) => {
-                        return moment(time) > yesterday();
+                        let t = moment(time);
+                        return t > yesterday() || t < START_DAY;
                     },
                     shortcuts: [{
                         text: '最近一周',
@@ -147,11 +154,31 @@ document.body.clientHeight;</script>
                             picker.$emit('pick', [start, end]);
                         }
                     }, {
+                        text: '最近半年',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(6, 'M');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
                         text: '最近一年',
                         onClick(picker) {
                             const end = yesterday();
                             const start = moment().subtract(1, 'y');
                             picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近两年',
+                        onClick(picker) {
+                            const end = yesterday();
+                            const start = moment().subtract(2, 'y');
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '全部时间',
+                        onClick(picker) {
+                            const end = yesterday();
+                            picker.$emit('pick', [START_DAY, end]);
                         }
                     }]
                 },
