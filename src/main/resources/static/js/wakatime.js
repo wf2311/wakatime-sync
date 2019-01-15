@@ -361,8 +361,12 @@ function initDayMap(start, end, showAll) {
 }
 
 function updateDurations(date) {
-    let data = getDayDurations(date);
-    durationChart.changeData(data);
+    // let data = getDayDurations(date);
+    // durationChart.changeData(data);
+    if (durationChart) {
+        durationChart.destroy()
+    }
+    initDurations(date);
 }
 
 function updateSummaries(start, end) {
