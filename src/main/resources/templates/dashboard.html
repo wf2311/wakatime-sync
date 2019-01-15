@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,height=device-height">
     <title>WakaTime</title>
     <style>
-        /*::-webkit-scrollbar {*/
-        /*display: none;*/
-        /*}*/
+        ::-webkit-scrollbar {
+        display: none;
+        }
         body {
             min-width: 640px
         }
@@ -79,7 +79,7 @@
         <div class="graph-item">
             <div class="graph-head">
                 <el-row>
-                    <span class="graph-title">Duration</span>
+                    <span class="graph-title">Duration </span>
                     <span>
                             <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
                                        :disabled="prevBtnDisabled"></el-button>
@@ -102,7 +102,7 @@
         </div>
         <div class="graph-item">
             <div class="graph-head">
-                <span class="graph-title">Activity</span>
+                <span class="graph-title">Activity </span>
                 <span>
                     <el-date-picker
                             v-model="rangeDays"
@@ -126,7 +126,7 @@
             </div>
             <div class="chart-container">
                 <div class="graph-chart">
-                    <table id="circle-table" style="width: 1000px">
+                    <table id="circle-table" style="width: 900px">
                         <tr>
                             <th>Editors</th>
                             <th>Languages</th>
@@ -153,7 +153,7 @@
         </div>
         <div class="graph-item">
             <div class="graph-head">
-                <span>Calendar</span>
+                <span>Calendar </span>
                 <span>
                     <el-switch
                             v-model="showAllTime"

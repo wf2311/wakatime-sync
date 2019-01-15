@@ -1,7 +1,7 @@
 const API_DOMAIN = "";
 // const colors = ["#FF0000", "#FFFF00", "#008B8B", "#7FFFD4", "#FFFAFA", "#0000FF", "#8A2BE2", "#A52A2A", "#000000", "#7FFF00", "#80000040", "#FF7F50", "#6495ED", "#DC143C", "#00FFFF", "#B8860B", "#A9A9A9", "#006400", "#FFDAB9", "#8B008B", "#FF00FF", "#483D8B", "#2F4F4F", "#D2B48C"];
 window.projects = [];
-const CHART_WIDTH = 1200;
+const CHART_WIDTH = 900;
 
 function groupBy(list, keyGetter) {
     const map = new Map();
@@ -296,9 +296,9 @@ function createCircleChart(id) {
     return new G2.Chart({
         container: id,
         forceFit: false,
-        height: 300,
-        width: 300,
-        padding: 50,
+        height: 240,
+        width: 240,
+        padding: 30
     });
 }
 
