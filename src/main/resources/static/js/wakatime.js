@@ -80,8 +80,7 @@ function getDayDurations(date) {
     let duMap = getEveryProjectDayDurations(data);
     if (duMap.size > 1) {
         var t = [];
-        //todo duMap.get('Total') != null
-        let p = 'Total';
+        let p = '合计';
         data.forEach(function (o) {
             t.push({
                 project: p,
@@ -167,10 +166,11 @@ function initDurations(date) {
         forceFit: false,
         height: 300,
         width: CHART_WIDTH,
-        padding: {top: 20, right: 30, bottom: 20, left: 300},
+        padding: {top: 20, right: 50, bottom: 20, left: 260},
         theme: 'default'
     });
     let data = getDayDurations(date);
+    $('#durations').parents('.graph-item').css('display', 'block');
     durationChart.source(data, {
         range: {
             type: 'linear',
@@ -179,31 +179,38 @@ function initDurations(date) {
             tickCount: 25
         }
     });
-
+    durationChart.axis('range', {
+        grid: {
+            type: 'line',
+            lineStyle: {
+                stroke: '#d9d9d9',
+                lineWidth: 1,
+                lineDash: [3, 999999] // 网格线的虚线配置，第一个参数描述虚线的实部占多少像素，第二个参数描述虚线的虚部占多少像素
+            },
+        },
+        line: {
+            lineWidth: 1
+        }, label: {
+            formatter(text, item, index) {
+                if (text < 10) {
+                    return '0' + text;
+                }
+                if (text === '24') {
+                    return '00';
+                }
+                return text;
+            },
+        }
+    });
+    durationChart.axis('text', {
+        grid: {
+            align: 'center',
+            type: 'line'
+        }
+    });
     durationChart.coord().transpose().scale(1, -1);
     durationChart.interval().tooltip(false).size(20).position('text*range').color('project');
     durationChart.render();
-}
-
-function activeChartDataView(projects) {
-    var ads = new DataSet();
-    var adv = ads.createView().source(projects);
-    adv.transform({
-        type: 'map',
-        callback(row) { // 加工数据后返回新的一行，默认返回行数据本身
-            if (window.projects.indexOf(row.name) < 0) {
-                window.projects.push(row.name);
-            }
-            row.index = window.projects.indexOf(row.name);
-            row.duration = row.seconds / 3600;
-            return row;
-        }
-    }).transform({
-        type: 'sort-by',
-        fields: ['day', 'duration'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
-        order: 'DESC'        // 默认为 ASC，DESC 则为逆序
-    });
-    return adv;
 }
 
 function initSummaries(start, end) {
@@ -211,6 +218,9 @@ function initSummaries(start, end) {
         window.projects = [];
     }
     let summaries = getSummaries(start, end);
+    if (summaries && summaries.projects.length > 0) {
+        $('#coding-activity').parents('.graph-item').css('display', 'block');
+    }
     activityChart = createActivityChart();
     var ads = new DataSet();
     var adv = ads.createView().source(summaries.projects);
@@ -230,7 +240,7 @@ function initSummaries(start, end) {
         order: 'DESC'        // 默认为 ASC，DESC 则为逆序
     });
     let dayMap = groupBy(summaries.projects, p => p.day);
-    let size = CHART_WIDTH * 0.92 / dayMap.size;
+    let size = (CHART_WIDTH) * 0.93 / dayMap.size;
     let tickCount = dayMap.size < 15 ? dayMap.size + 1 : 8;
     activityChart.source(adv, {
         day: {
@@ -238,6 +248,7 @@ function initSummaries(start, end) {
             tickCount: tickCount
         }
     });
+
     activityChart.legend(false);
     activityChart.interval().tooltip('name*seconds', function (name, seconds) {
         return {
@@ -247,6 +258,19 @@ function initSummaries(start, end) {
     }).position('day*duration').size(size).color('name').adjust([{
         type: 'stack',
     }]);
+    activityChart.axis('duration', {
+        grid: {
+            type: 'line',
+            lineStyle: {
+                stroke: '#d9d9d9',
+                lineWidth: 1,
+                lineDash: [3, 999999] // 网格线的虚线配置，第一个参数描述虚线的实部占多少像素，第二个参数描述虚线的虚部占多少像素
+            },
+        },
+        line: {
+            lineWidth: 1
+        }
+    });
     activityChart.render();
     circleGroupEditorChart = createCircleChart('group-editor');
     circleGroupLanguageChart = createCircleChart('group-language');
@@ -263,7 +287,8 @@ function createActivityChart() {
         container: 'coding-activity',
         forceFit: false,
         height: 360,
-        width: CHART_WIDTH
+        padding: {top: 20, right: 40, bottom: 20, left: 40},
+        width: CHART_WIDTH,
     });
 }
 
@@ -272,14 +297,25 @@ function createCircleChart(id) {
         container: id,
         forceFit: false,
         height: 300,
-        width: 300
+        width: 300,
+        padding: 50,
     });
 }
 
 function initDayMap(start, end, showAll) {
     var myChart = echarts.init(document.getElementById('day-map'));
     var data = getRangeDurations(start, end, showAll);
+    if (data.length > 1) {
+        $('#day-map').parents('.graph-item').css('display', 'block');
+    } else {
+        return;
+    }
     var range = [data[0][0], data[data.length - 1][0]];
+    let days = moment(range[1]).diff(moment(range[0]), 'days');
+    let width = days / 7 * 20 + 200;
+    $('#day-map').css('width', width + 'px');
+    $('#day-map').children('div:first-child').css('width', width + 'px');
+    myChart.resize();
     option = {
         tooltip: {
             position: 'top',
@@ -310,7 +346,7 @@ function initDayMap(start, end, showAll) {
                 monthLabel: {
                     nameMap: 'cn'
                 },
-                cellSize: [15, 15]
+                cellSize: [20, 20]
             }],
 
         series: [{

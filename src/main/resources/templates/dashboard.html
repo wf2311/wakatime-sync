@@ -5,48 +5,68 @@
     <meta name="viewport" content="width=device-width,height=device-height">
     <title>WakaTime</title>
     <style>
-    ::-webkit-scrollbar {
-        display: none;
-    }
-    .graph-item {
-        margin: 15px;
-        padding: 25px;
-        background: #2f353c;
-        color: #fff;
-        border-radius: 3px;
-    }
-    .graph-head {
-        display: flex;
-        justify-content: center;
-        vertical-align: middle;
-        margin-bottom: 20px;
-    }
-    .graph-head > span {
-        font-size: 20px;
-        font-weight: 700;
-    }
-    .graph-title {
-        line-height: 2;
-    }
-    .graph-head > span:first-child {
-        margin-right: 20px;
-    }
-    #coding-activity > div {
-        text-align: center;
-    }
-    #coding-activity > div canvas {
-        display: inline-block;
-    }
-    .el-switch__label span {
-        color: #fff;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: .8;
-    }
-    .el-switch__label.is-active span {
-        color: #409EFF;
-        margin-right: 0;
-    }
+        /*::-webkit-scrollbar {*/
+        /*display: none;*/
+        /*}*/
+        .graph-item {
+            margin: 15px;
+            padding: 25px;
+            background: #2d353c;
+            color: #fff;
+            align-content: center;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .graph-head {
+            display: flex;
+            justify-content: center;
+            vertical-align: middle;
+            margin-bottom: 20px;
+        }
+
+        .graph-head > span {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .graph-title {
+            line-height: 2;
+        }
+
+        .graph-head > span:first-child {
+            margin-right: 20px;
+        }
+
+        .chart-container {
+            justify-content: center;
+            display: flex;
+        }
+
+        .graph-chart {
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+
+        #coding-activity > div {
+            text-align: center;
+        }
+
+        #coding-activity > div canvas {
+            display: inline-block;
+        }
+
+        .el-switch__label span {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: .8;
+        }
+
+        .el-switch__label.is-active span {
+            color: #409EFF;
+            margin-right: 0;
+        }
     </style>
 </head>
 <body>
@@ -55,20 +75,26 @@
         <div class="graph-item">
             <div class="graph-head">
                 <span class="graph-title">Duration</span>
-                <span>
-                <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
-                           :disabled="prevBtnDisabled" circle></el-button>
-                <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
-                                :clearable="false"
-                                :editable="false"
-                                @change="updateDurationChart"
-                                :picker-options="durationTimeOptions">
-                </el-date-picker>
-                <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations"
-                           :disabled="nextBtnDisabled" circle></el-button>
-                </span>
+                <el-form>
+                    <el-form-item>
+                        <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
+                                   :disabled="prevBtnDisabled"></el-button>
+                        <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
+                                        :clearable="false"
+                                        :editable="false"
+                                        @change="updateDurationChart"
+                                        :picker-options="durationTimeOptions">
+                        </el-date-picker>
+                        <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations"
+                                   :disabled="nextBtnDisabled"></el-button>
+                    </el-form-item>
+                </el-form>
             </div>
-            <div id="durations"></div>
+            <div class="chart-container">
+                <div class="graph-chart">
+                    <div id="durations"></div>
+                </div>
+            </div>
         </div>
         <div class="graph-item">
             <div class="graph-head">
@@ -89,25 +115,37 @@
                     </el-date-picker>
                 </span>
             </div>
-            <div id="coding-activity"></div>
-            <el-row>
-                <el-col :span="6">
-                    <div>Editors</div>
-                    <div id="group-editor"></div>
-                </el-col>
-                <el-col :span="6">
-                    <div>Languages</div>
-                    <div id="group-language"></div>
-                </el-col>
-                <el-col :span="6">
-                    <div>Actions</div>
-                    <div id="group-action"></div>
-                </el-col>
-                <el-col :span="6">
-                    <div>System</div>
-                    <div id="group-system"></div>
-                </el-col>
-            </el-row>
+            <div class="chart-container">
+                <div class="graph-chart">
+                    <div id="coding-activity"></div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="graph-chart">
+                    <table id="circle-table" style="width: 1000px">
+                        <tr>
+                            <th>Editors</th>
+                            <th>Languages</th>
+                            <th>Actions</th>
+                            <th>System</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="group-editor"></div>
+                            </td>
+                            <td>
+                                <div id="group-language"></div>
+                            </td>
+                            <td>
+                                <div id="group-action"></div>
+                            </td>
+                            <td>
+                                <div id="group-system"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
         <div class="graph-item">
             <div class="graph-head">
@@ -120,7 +158,12 @@
                     </el-switch>
                 </span>
             </div>
-            <div id="day-map" style="height:800px;"></div>
+            <div class="chart-container">
+                <div class="graph-chart">
+                    <div id="day-map" style="height:240px;"></div>
+                </div>
+            </div>
+
         </div>
     </template>
 </div>
