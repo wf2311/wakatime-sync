@@ -19,14 +19,14 @@ public interface DurationTimeQueryHandler<T> {
     long deleteByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 
     default List<T> queryByDay(LocalDate day) {
-        return findByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusNanos(1));
+        return findByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusSeconds(1));
     }
 
     default long countByDay(LocalDate day) {
-        return countByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusNanos(1));
+        return countByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusSeconds(1));
     }
 
     default long deleteByDay(LocalDate day) {
-        return deleteByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusNanos(1));
+        return deleteByStartTimeBetween(day.atStartOfDay(), day.plusDays(1).atStartOfDay().minusSeconds(1));
     }
 }
