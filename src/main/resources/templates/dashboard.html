@@ -8,6 +8,10 @@
         /*::-webkit-scrollbar {*/
         /*display: none;*/
         /*}*/
+        body {
+            min-width: 640px
+        }
+
         .graph-item {
             margin: 15px;
             padding: 25px;
@@ -35,7 +39,7 @@
         }
 
         .graph-head > span:first-child {
-            margin-right: 20px;
+            /*margin-right: 20px;*/
         }
 
         .chart-container {
@@ -74,21 +78,21 @@
     <template>
         <div class="graph-item">
             <div class="graph-head">
-                <span class="graph-title">Duration</span>
-                <el-form>
-                    <el-form-item>
-                        <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
-                                   :disabled="prevBtnDisabled"></el-button>
-                        <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
-                                        :clearable="false"
-                                        :editable="false"
-                                        @change="updateDurationChart"
-                                        :picker-options="durationTimeOptions">
-                        </el-date-picker>
-                        <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations"
-                                   :disabled="nextBtnDisabled"></el-button>
-                    </el-form-item>
-                </el-form>
+                <el-row>
+                    <span class="graph-title">Duration</span>
+                    <span>
+                            <el-button type="info" icon="el-icon-arrow-left" title="前一天" @click="preDayDurations"
+                                       :disabled="prevBtnDisabled"></el-button>
+                            <el-date-picker v-model="durationDay" type="date" placeholder="选择日期"
+                                            :clearable="false"
+                                            :editable="false"
+                                            @change="updateDurationChart"
+                                            :picker-options="durationTimeOptions">
+                            </el-date-picker>
+                            <el-button type="info" icon="el-icon-arrow-right" title="后一天" @click="nextDayDurations"
+                                       :disabled="nextBtnDisabled"></el-button>
+                    </span>
+                </el-row>
             </div>
             <div class="chart-container">
                 <div class="graph-chart">
