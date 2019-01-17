@@ -3,6 +3,8 @@ server:
 wakatime:
   secret-api-key: @wakatime.app.key@  # wakatime app key
   start-day: 2016-02-01
+  ftqq-key: @wakatime.ftqq.key@ # Server酱 SCKEY @see http://sc.ftqq.com，为空表示不发生此类消息通知
+  dingding-key: @wakatime.dingding.key@ # 钉钉机器人token，为空表示不发生此类消息通知
 logging:
   level:
     root: info

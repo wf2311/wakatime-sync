@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync;
 
 import com.wf2311.wakatime.sync.entity.Time;
+import com.wf2311.wakatime.sync.message.MessageFactory;
 import com.wf2311.wakatime.sync.repository.TimeRepository;
 import com.wf2311.wakatime.sync.service.sync.SyncService;
 import org.junit.Test;
@@ -98,6 +99,16 @@ public class Tests {
         LocalDate start = LocalDate.of(2019, 1, 10);
         LocalDate end = LocalDate.now().minusDays(1);
         syncService.sync(start, end);
+    }
+
+    @Resource
+    private MessageFactory messageFactory;
+
+
+    @Test
+    public void testSendMessage() {
+        LocalDate day = LocalDate.of(2019, 1, 15);
+        messageFactory.sendDayWakatimeInfo(day);
     }
 }
 

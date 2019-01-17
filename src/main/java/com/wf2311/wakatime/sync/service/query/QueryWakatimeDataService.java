@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.sql.ResultSet;
@@ -34,6 +35,21 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
 
     public List<DayDurationVo> selectDayDuration(String date) {
         return findDayDurationData(DateHelper.parse(date).toLocalDate());
+    }
+
+    public SimpleDayDurationVo findSimpleDayDurationInfo(LocalDate day) {
+        SimpleDayDurationVo vo = new SimpleDayDurationVo();
+        vo.setProjects(selectDayTypeGroupSummaries("day_project", day, day));
+        if (CollectionUtils.isEmpty(vo.getProjects())) {
+            return vo;
+        }
+        vo.setEditors(selectDayTypeGroupSummaries("day_editor", day, day));
+        vo.setActions(selectDayTypeGroupSummaries("day_category", day, day));
+        vo.setLanguages(selectDayTypeGroupSummaries("day_language", day, day));
+        vo.setSystems(selectDayTypeGroupSummaries("day_operating_system", day, day));
+        vo.setTotalSeconds(vo.getProjects().stream().mapToInt(DayTypeGroupSummaryUnit::getSeconds).sum());
+        vo.setDay(day);
+        return vo;
     }
 
     private List<DayDurationVo> findDayDurationData(LocalDate day) {
@@ -108,6 +124,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         sql += " group by day";
         return namedParameterJdbcTemplate.query(sql, parameters, new DaySumMapper());
     }
+
     class DaySumMapper implements RowMapper<DaySumVo> {
         @Override
         public DaySumVo mapRow(ResultSet resultSet, int i) throws SQLException {

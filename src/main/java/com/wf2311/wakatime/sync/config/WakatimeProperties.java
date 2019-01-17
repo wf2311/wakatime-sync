@@ -15,6 +15,9 @@ public class WakatimeProperties {
 
     public static String SECRET_API_KEY;
     private String secretApiKey;
+    private String ftqqKey;
+    private String dingdingKey;
+
     private LocalDate startDay = LocalDate.now();
 
     public void setStartDay(String startDay) {
@@ -37,5 +40,21 @@ public class WakatimeProperties {
     public void setSecretApiKey(String secretApiKey) {
         this.secretApiKey = secretApiKey;
         SECRET_API_KEY = secretApiKey;
+    }
+
+    public String getFtqqKey() {
+        return ftqqKey;
+    }
+
+    public void setFtqqKey(String ftqqKey) {
+        this.ftqqKey = ftqqKey;
+    }
+
+    public String getDingdingKey() {
+        return dingdingKey;
+    }
+
+    public void setDingdingKey(String dingdingKey) {
+        this.dingdingKey = dingdingKey;
     }
 }
