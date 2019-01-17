@@ -26,8 +26,8 @@ Array.prototype.sum = function (prop) {
     for (let i = 0, _len = this.length; i < _len; i++) {
         total += this[i][prop];
     }
-    return total
-}
+    return total;
+};
 
 function formatDurations(seconds) {
     let date = new Date(null);
@@ -171,6 +171,13 @@ function initDurations(date) {
     });
     let data = getDayDurations(date);
     $('#durations').parents('.graph-item').css('display', 'block');
+    if (!data || data.length === 0) {
+        $('#no-duration-data').css('display', 'block');
+        $('#durations').css('display', 'none');
+    } else {
+        $('#durations').css('display', 'block');
+        $('#no-duration-data').css('display', 'none');
+    }
     durationChart.source(data, {
         range: {
             type: 'linear',
@@ -191,6 +198,7 @@ function initDurations(date) {
         line: {
             lineWidth: 1
         }, label: {
+            textStyle: {fill: '#fff'},
             formatter(text, item, index) {
                 if (text < 10) {
                     return '0' + text;
@@ -203,6 +211,9 @@ function initDurations(date) {
         }
     });
     durationChart.axis('text', {
+        label: {
+            textStyle: {fill: '#fff'},
+        },
         grid: {
             align: 'center',
             type: 'line'
@@ -259,6 +270,9 @@ function initSummaries(start, end) {
         type: 'stack',
     }]);
     activityChart.axis('duration', {
+        label: {
+            textStyle: {fill: '#fff'},
+        },
         grid: {
             type: 'line',
             lineStyle: {
@@ -269,6 +283,11 @@ function initSummaries(start, end) {
         },
         line: {
             lineWidth: 1
+        }
+    });
+    activityChart.axis('day', {
+        label: {
+            textStyle: {fill: '#fff'},
         }
     });
     activityChart.render();
