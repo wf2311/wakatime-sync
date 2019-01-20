@@ -17,6 +17,7 @@ public class WakatimeProperties {
     private String secretApiKey;
     private String ftqqKey;
     private String dingdingKey;
+    private Boolean fillNoDataDay;
 
     private LocalDate startDay = LocalDate.now();
 
@@ -56,5 +57,13 @@ public class WakatimeProperties {
 
     public void setDingdingKey(String dingdingKey) {
         this.dingdingKey = dingdingKey;
+    }
+
+    public Boolean getFillNoDataDay() {
+        return fillNoDataDay;
+    }
+
+    public void setFillNoDataDay(Boolean fillNoDataDay) {
+        this.fillNoDataDay = fillNoDataDay;
     }
 }

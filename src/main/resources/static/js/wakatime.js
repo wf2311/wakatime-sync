@@ -262,6 +262,11 @@ function initSummaries(start, end) {
 
     activityChart.legend(false);
     activityChart.interval().tooltip('name*seconds', function (name, seconds) {
+        if (!name) {
+            return {
+                name: '无记录'
+            };
+        }
         return {
             name: name,
             value: formatDurations(seconds)

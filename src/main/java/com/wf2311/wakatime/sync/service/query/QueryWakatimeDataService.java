@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.service.query;
 
 import com.wf2311.jfeng.time.DateHelper;
+import com.wf2311.wakatime.sync.config.WakatimeProperties;
 import com.wf2311.wakatime.sync.domain.vo.*;
 import com.wf2311.wakatime.sync.entity.DayProjectEntity;
 import com.wf2311.wakatime.sync.entity.DurationEntity;
@@ -19,8 +20,11 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
@@ -32,6 +36,8 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     private DurationRepository durationRepository;
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Resource
+    private WakatimeProperties wakatimeProperties;
 
     public List<DayDurationVo> selectDayDuration(String date) {
         return findDayDurationData(DateHelper.parse(date).toLocalDate());
@@ -75,19 +81,44 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         }
         SummaryDataVo data = new SummaryDataVo();
         List<DayProjectEntity> projects = dayProjectRepository.queryByDay(start, end);
-        List<DayProjectChartVo> chartProjects = projects.stream().map(p -> {
-            DayProjectChartVo u = new DayProjectChartVo();
-            u.setDay(p.getDay().toString());
-            u.setSeconds(p.getTotalSeconds());
-            u.setName(p.getName());
-            return u;
-        }).collect(Collectors.toList());
+        if (wakatimeProperties.getFillNoDataDay()) {
+            fillNoDataDay(start, end, projects);
+        }
+        List<DayProjectChartVo> chartProjects = projects.stream()
+                .sorted(Comparator.comparing(DayProjectEntity::getDay))
+                .map(p -> {
+                    DayProjectChartVo u = new DayProjectChartVo();
+                    u.setDay(p.getDay().toString());
+                    u.setSeconds(p.getTotalSeconds());
+                    u.setName(p.getName());
+                    return u;
+                }).collect(Collectors.toList());
         data.setProjects(chartProjects);
         data.setEditors(selectDayTypeGroupSummaries("day_editor", start, end));
         data.setCategories(selectDayTypeGroupSummaries("day_category", start, end));
         data.setLanguages(selectDayTypeGroupSummaries("day_language", start, end));
         data.setOperatingSystems(selectDayTypeGroupSummaries("day_operating_system", start, end));
         return data;
+    }
+
+    private void fillNoDataDay(LocalDate start, LocalDate end, List<DayProjectEntity> projects) {
+        int expectDays = start.until(end).getDays();
+        if (expectDays == projects.size()) {
+            return;
+        }
+        Set<LocalDate> exists = projects.stream().map(DayProjectEntity::getDay).collect(Collectors.toSet());
+        List<DayProjectEntity> lack = IntStream.rangeClosed(0, expectDays).mapToObj(start::plusDays)
+                .filter(d -> !exists.contains(d))
+                .map(d -> {
+                    DayProjectEntity e = new DayProjectEntity();
+                    e.setDay(d);
+                    e.setTotalSeconds(0);
+                    e.setName("");
+                    return e;
+                })
+                .collect(Collectors.toList());
+        projects.addAll(lack);
+
     }
 
     private List<DayTypeGroupSummaryUnit> selectDayTypeGroupSummaries(String type, LocalDate start, LocalDate end) {
