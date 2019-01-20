@@ -311,7 +311,7 @@ function createActivityChart() {
         container: 'coding-activity',
         forceFit: false,
         height: 360,
-        padding: {top: 20, right: 40, bottom: 20, left: 40},
+        padding: {top: 20, right: 40, bottom: 50, left: 40},
         width: CHART_WIDTH,
     });
 }
