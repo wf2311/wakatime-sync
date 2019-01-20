@@ -39,11 +39,20 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
     @Resource
     private WakatimeProperties wakatimeProperties;
 
+    private void assertTimeInRange(LocalDate day) {
+        if (day == null || day.isBefore(wakatimeProperties.getStartDate()) || day.isAfter(LocalDate.now().minusDays(1))) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public List<DayDurationVo> selectDayDuration(String date) {
-        return findDayDurationData(DateHelper.parse(date).toLocalDate());
+        LocalDate day = DateHelper.parse(date).toLocalDate();
+        assertTimeInRange(day);
+        return findDayDurationData(day);
     }
 
     public SimpleDayDurationVo findSimpleDayDurationInfo(LocalDate day) {
+        assertTimeInRange(day);
         SimpleDayDurationVo vo = new SimpleDayDurationVo();
         vo.setProjects(selectDayTypeGroupSummaries("day_project", day, day));
         if (CollectionUtils.isEmpty(vo.getProjects())) {
@@ -79,6 +88,9 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         if (start == null || end == null || start.isAfter(end)) {
             throw new IllegalArgumentException();
         }
+        assertTimeInRange(start);
+        assertTimeInRange(end);
+
         SummaryDataVo data = new SummaryDataVo();
         List<DayProjectEntity> projects = dayProjectRepository.queryByDay(start, end);
         if (wakatimeProperties.getFillNoDataDay()) {
@@ -144,10 +156,12 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         if (showAll == null || !showAll) {
             LocalDateTime s = DateHelper.parse(start);
-            LocalDateTime e = StringUtils.isEmpty(end) ? LocalDateTime.now() : DateHelper.parse(end);
+            LocalDateTime e = StringUtils.isEmpty(end) ? LocalDate.now().atStartOfDay().minusSeconds(1) : DateHelper.parse(end);
             if (s.isAfter(e)) {
                 throw new IllegalArgumentException();
             }
+            assertTimeInRange(s.toLocalDate());
+            assertTimeInRange(e.toLocalDate());
             sql += " where day >=:start and day <=:end";
             parameters.addValue("start", start);
             parameters.addValue("end", end);
