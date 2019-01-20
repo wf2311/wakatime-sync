@@ -55,6 +55,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         assertTimeInRange(day);
         SimpleDayDurationVo vo = new SimpleDayDurationVo();
         vo.setProjects(selectDayTypeGroupSummaries("day_project", day, day));
+        vo.setDay(day);
         if (CollectionUtils.isEmpty(vo.getProjects())) {
             return vo;
         }
@@ -63,7 +64,6 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
         vo.setLanguages(selectDayTypeGroupSummaries("day_language", day, day));
         vo.setSystems(selectDayTypeGroupSummaries("day_operating_system", day, day));
         vo.setTotalSeconds(vo.getProjects().stream().mapToInt(DayTypeGroupSummaryUnit::getSeconds).sum());
-        vo.setDay(day);
         return vo;
     }
 
