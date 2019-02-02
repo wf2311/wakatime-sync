@@ -304,6 +304,15 @@ function initSummaries(start, end) {
     initDayTypeCircleChart(circleGroupLanguageChart, summaries.languages);
     initDayTypeCircleChart(circleGroupActionChart, summaries.categories);
     initDayTypeCircleChart(circleGroupSystemChart, summaries.operatingSystems);
+
+    activityChart.on('plotclick', ev => {
+        var data = activityChart.getSnapRecords({x: ev.x, y: ev.y});
+        if (!data) {
+            return;
+        }
+        let day = data[0]._origin['day'];
+        updateDurationDayAndData(day);
+    });
 }
 
 function createActivityChart() {
@@ -382,6 +391,13 @@ function initDayMap(start, end, showAll) {
     };
 
     myChart.setOption(option);
+    myChart.on('click', function (params) {
+        if (!params.componentType === 'series' || !params.data instanceof Array) {
+            return;
+        }
+        let day = params.data[0];
+        updateDurationDayAndData(day);
+    });
 }
 
 function updateDurations(date) {
@@ -448,4 +464,9 @@ function initDayTypeCircleChart(chart, data) {
         };
     });
     chart.render();
+}
+
+function updateDurationDayAndData(day) {
+    vm.durationDay = formatDay(day);
+    vm.updateDurationChart();
 }
