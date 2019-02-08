@@ -2,6 +2,7 @@ server:
   port: 3040
 wakatime:
   secret-api-key: @wakatime.app.key@  # wakatime app key
+  proxy-url: @wakatime.proxy.url@ # wakatime接口访问代理地址,例如：socks5://127.0.0.1:1080 或 http://127.0.0.1:1087，请根据实际情况配置
   start-day: 2016-02-01 # 起始记录时间
   ftqq-key: @wakatime.ftqq.key@ # Server酱 SCKEY @see http://sc.ftqq.com，为空表示不发生此类消息通知
   dingding-key: @wakatime.dingding.key@ # 钉钉机器人token，为空表示不发生此类消息通知
@@ -12,7 +13,7 @@ logging:
   config: classpath:log4j2-spring.xml
 spring:
   application:
-    name: wakatime-syncLastDay
+    name: wakatime-sync
   thymeleaf:
     cache: false
     mode: HTML

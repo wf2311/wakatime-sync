@@ -14,10 +14,13 @@ import java.time.LocalDate;
 public class WakatimeProperties {
 
     public static String SECRET_API_KEY;
+    public static String PROXY_URL = null;
+
     private String secretApiKey;
     private String ftqqKey;
     private String dingdingKey;
     private Boolean fillNoDataDay;
+    private String proxyUrl;
 
     private LocalDate startDay = LocalDate.now();
 
@@ -41,6 +44,11 @@ public class WakatimeProperties {
     public void setSecretApiKey(String secretApiKey) {
         this.secretApiKey = secretApiKey;
         SECRET_API_KEY = secretApiKey;
+    }
+
+    public void setProxyUrl(String proxyUrl) {
+        this.proxyUrl = proxyUrl;
+        PROXY_URL = proxyUrl;
     }
 
     public String getFtqqKey() {

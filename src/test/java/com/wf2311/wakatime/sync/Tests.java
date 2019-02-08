@@ -1,9 +1,11 @@
 package com.wf2311.wakatime.sync;
 
+import com.wf2311.wakatime.sync.domain.Duration;
 import com.wf2311.wakatime.sync.entity.Time;
 import com.wf2311.wakatime.sync.message.MessageFactory;
 import com.wf2311.wakatime.sync.repository.TimeRepository;
 import com.wf2311.wakatime.sync.service.sync.SyncService;
+import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 @RunWith(SpringRunner.class)
@@ -96,7 +99,13 @@ public class Tests {
 
     @Test
     public void sync2019A() {
-        LocalDate start = LocalDate.of(2019, 1, 10);
+        LocalDate start = LocalDate.of(2019, 1, 1);
+        LocalDate end = LocalDate.now().minusDays(1);
+        syncService.sync(start, end);
+    }
+    @Test
+    public void syncCustom() {
+        LocalDate start = LocalDate.of(2019, 2, 3);
         LocalDate end = LocalDate.now().minusDays(1);
         syncService.sync(start, end);
     }
@@ -104,10 +113,16 @@ public class Tests {
     @Resource
     private MessageFactory messageFactory;
 
+    @Test
+    public void testProxy() {
+        List<Duration> duration = WakaTimeDataSpider.duration(LocalDate.now().minusDays(1));
+        System.out.println(duration.size());
+    }
+
 
     @Test
     public void testSendMessage() {
-        LocalDate day = LocalDate.of(2019, 1, 15);
+        LocalDate day = LocalDate.of(2019, 1, 19);
         messageFactory.sendDayWakatimeInfo(day);
     }
 }

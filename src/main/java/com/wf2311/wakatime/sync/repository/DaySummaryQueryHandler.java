@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.repository;
 
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface DaySummaryQueryHandler<T> {
 
     long countByDayBetween(LocalDate startDay, LocalDate endDay);
 
+    @Transactional
     void deleteByDayBetween(LocalDate startDay, LocalDate endDay);
 
     default List<T> queryByDay(LocalDate day) {
