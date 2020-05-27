@@ -90,3 +90,16 @@
 - 修改图表中坐标轴的文字颜色为与背景颜色区分较大的白色；
 - 持续时间图当天没数据时不显示图表结构；
 - 新增了定时任务：每天早上09:00会根据配置信息想钉钉或微信发送上一天的编码时间信息；
+
+# 构建方法
+1. 在 src/main/resources/application.yml 文件中配置 api-key 等信息
+2. 值得注意的是，数据库的使用外部地址，localhost 是无法指向宿主机的，详见 [Docker容器内连接宿主机的Mysql服务器](https://www.jianshu.com/p/3e1fd311ba87)
+3. 将 build.sh 移动到项目文件夹外部
+```shell
+chmod +x build.sh
+./build.sh wakatime-sync 3040
+```
+4. 环境要求安装 maven 和 docker
+5. oracle 现在要求 jdk 的 image 使用要进行验证，详见：
+> https://blog.csdn.net/wengyupeng/article/details/87897866
+
