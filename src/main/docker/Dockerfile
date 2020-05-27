@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM carsharing/alpine-oraclejdk8-bash
 RUN echo "Asia/Shanghai" > /etc/timezone
 VOLUME /tmp
 ADD wakatime-sync.jar app.jar

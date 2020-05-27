@@ -195,7 +195,7 @@ document.body.clientHeight;</script>
     /**
      * 起始时间，根据实际情况修改
      */
-    const START_DAY = moment('2016-02-15');
+    const START_DAY = moment('2020-02-01');
 
     let vm = new Vue({
         el: '#app',
@@ -313,7 +313,7 @@ document.body.clientHeight;</script>
                 this.prevBtnDisabled = this.durationDay <= START_DAY;
             },
             updateDayMapChart: function () {
-                initDayMap(this.dayMapStartDay, this.dayMapEndDay, this.showAllTime);
+                initDayMap(this.dayMapStartDay > formatDay(START_DAY) ? this.dayMapStartDay : formatDay(START_DAY), this.dayMapEndDay, this.showAllTime);
             },
             formatDurationDate() {
                 return formatDay(this.durationDay);
