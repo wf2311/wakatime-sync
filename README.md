@@ -1,6 +1,47 @@
 # wakatime-sync
 
-## WakaTime
+## quick start
+### 简介
+* 此版本的 `Dockerfile` 使用分阶段构建，不需要宿主机安装 `maven` 环境
+
+### 构建方法
+1. 使用 `sql/wakatime_sync.sql` 文件创建需要的表格
+2. 从模板复制一份你自己的配置文件
+```shell
+cp src/main/resources/application.example.yml src/main/resources/application.yml
+```
+3. 在 `application.yml` 文件中补全 `api-key` 等信息
+4. 构建你自己的镜像
+```shell
+cd wakatime-sync \
+&& docker build -t wakatime-sync .
+```
+5. 启动它，其中 /var/www/log 对应的宿主机文件夹，用于保存日志文件 `server.log`
+```shell
+docker run -d \
+-v /your/path/to/log:/var/www/log \
+-p <your-port>:3040 \
+--name wakatime \
+wakatime-sync
+```
+6. 此项目每天都会自动爬取前一天的记录。如果需要导入历史数据，你可以手动调用项目的接口：
+```shell
+curl -X POST http://<your-domain>:<your-port>/api/v1/sync \
+		-d day=<sync-days-num> \
+		-d apiKey=<your-wakatime-api-key>
+```
+
+### 注意事项
+```
+jdbc:mysql://<mysql-ip>:<mysql-port>/<mysql-db>?characterEncoding=utf8&...
+```
+1. 数据库使用 `jdbc` 进行通信。在上述的 `jdbc-url` 中，如果 `<mysql-ip>` 填写 `localhost` 或者 `127.0.0.1` 是无法指向宿主机的，建议直接使用公网 IP。如果你没有公网 IP，网上也有相关的解决方案。当然，如果你使用 `docker-compose`，`<mysql-ip>` 填写 `mysql` 服务的名称即可。
+
+2. 使用 `jre` 或者 `jdk` 的镜像，`oracle` 可能会要求使用者进行一些验证，详见：
+> https://blog.csdn.net/wengyupeng/article/details/87897866
+
+---
+以下为原项目的 README
 
 ### WakaTime简介 
 [WakaTime](https://wakatime.com/) 是一款可以记录你的编码时间的工具，目前支持绝大部分主流的 IDE 以及 Chrome 浏览器。
@@ -90,16 +131,3 @@
 - 修改图表中坐标轴的文字颜色为与背景颜色区分较大的白色；
 - 持续时间图当天没数据时不显示图表结构；
 - 新增了定时任务：每天早上09:00会根据配置信息想钉钉或微信发送上一天的编码时间信息；
-
-# 构建方法
-1. 在 src/main/resources/application.yml 文件中配置 api-key 等信息
-2. 值得注意的是，数据库的使用外部地址，localhost 是无法指向宿主机的，详见 [Docker容器内连接宿主机的Mysql服务器](https://www.jianshu.com/p/3e1fd311ba87)
-3. 将 build.sh 移动到项目文件夹外部
-```shell
-chmod +x build.sh
-./build.sh wakatime-sync 3040
-```
-4. 环境要求安装 maven 和 docker
-5. oracle 现在要求 jdk 的 image 使用要进行验证，详见：
-> https://blog.csdn.net/wengyupeng/article/details/87897866
-
