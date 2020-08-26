@@ -25,4 +25,8 @@ wakatime-sync-web/wakatime-sync-web.iml
 /.nb-gradle/
 *.iml
 
+# target
 wakatime-sync-web/target/classes/
+
+# application.yaml
+src/main/resources/application.yml

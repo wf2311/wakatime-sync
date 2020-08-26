@@ -1,6 +1,48 @@
 # wakatime-sync
 
-## WakaTime
+## quick start
+### 简介
+* 更新 `mysql` 版本到 `8.0`
+* 此版本的 `Dockerfile` 使用分阶段构建，不需要宿主机安装 `maven` 环境
+
+### 构建方法
+1. 使用 `sql/wakatime_sync.sql` 文件创建需要的表格
+2. 从模板复制一份你自己的配置文件，在 `application.yml` 文件中补全 `api-key` 等信息
+```shell
+cp src/main/resources/application.example.yml src/main/resources/application.yml
+```
+3. 根据实际情况，修改 `src/main/resources/templates/dashboard.html` 文件中的 `START_DAY` 的值
+4. 构建你自己的镜像
+```shell
+cd wakatime-sync \
+&& docker build -t wakatime-sync .
+```
+5. 启动它，其中 `/var/www/log` 文件夹，用于保存日志文件 `server.log`
+```shell
+docker run -d \
+-v /your/path/to/log:/var/www/log \
+-p <your-port>:3040 \
+--name wakatime \
+wakatime-sync
+```
+6. 此项目每天都会自动爬取前一天的记录。如果需要导入历史数据，你可以手动调用项目的接口：
+```shell
+curl -X POST http://<your-domain>:<your-port>/api/v1/sync \
+-d day=<sync-days-num> \
+-d apiKey=<your-wakatime-api-key>
+```
+
+### 注意事项
+```
+jdbc:mysql://<mysql-ip>:<mysql-port>/<mysql-db>?characterEncoding=utf8&...
+```
+1. 数据库使用 `jdbc` 进行通信。在上述的 `jdbc-url` 中，如果 `<mysql-ip>` 填写 `localhost` 或者 `127.0.0.1` 是无法指向宿主机的，建议直接使用公网 IP。如果你没有公网 IP，网上也有相关的解决方案。当然，如果你使用 `docker-compose`，`<mysql-ip>` 填写 `mysql` 服务的名称即可。
+
+2. 使用 `jre` 或者 `jdk` 的镜像，`oracle` 可能会要求使用者进行一些验证，详见：
+> https://blog.csdn.net/wengyupeng/article/details/87897866
+
+---
+以下为原项目的 README
 
 ### WakaTime简介 
 [WakaTime](https://wakatime.com/) 是一款可以记录你的编码时间的工具，目前支持绝大部分主流的 IDE 以及 Chrome 浏览器。
