@@ -1,0 +1,247 @@
+{
+  "data": [
+    {
+      "categories": [
+        {
+          "digital": "13:14:46",
+          "hours": 13,
+          "minutes": 14,
+          "name": "Browsing",
+          "percent": 99.82,
+          "seconds": 46,
+          "text": "13 hrs 14 mins",
+          "total_seconds": 47686.381000
+        },
+        {
+          "digital": "0:01:24",
+          "hours": 0,
+          "minutes": 1,
+          "name": "Coding",
+          "percent": 0.18,
+          "seconds": 24,
+          "text": "1 min",
+          "total_seconds": 84.619000
+        }
+      ],
+      "dependencies": [],
+      "editors": [
+        {
+          "digital": "13:14:46",
+          "hours": 13,
+          "minutes": 14,
+          "name": "Chrome",
+          "percent": 99.82,
+          "seconds": 46,
+          "text": "13 hrs 14 mins",
+          "total_seconds": 47686.381000
+        },
+        {
+          "digital": "0:01:24",
+          "hours": 0,
+          "minutes": 1,
+          "name": "IntelliJ",
+          "percent": 0.18,
+          "seconds": 24,
+          "text": "1 min",
+          "total_seconds": 84.619000
+        }
+      ],
+      "grand_total": {
+        "digital": "13:16",
+        "hours": 13,
+        "minutes": 16,
+        "text": "13 hrs 16 mins",
+        "total_seconds": 47771.000000
+      },
+      "languages": [
+        {
+          "digital": "13:14:46",
+          "hours": 13,
+          "minutes": 14,
+          "name": "Other",
+          "percent": 99.82,
+          "seconds": 46,
+          "text": "13 hrs 14 mins",
+          "total_seconds": 47686.381000
+        },
+        {
+          "digital": "0:01:24",
+          "hours": 0,
+          "minutes": 1,
+          "name": "Java",
+          "percent": 0.18,
+          "seconds": 24,
+          "text": "1 min",
+          "total_seconds": 84.619000
+        }
+      ],
+      "machines": [
+        {
+          "digital": "13:14:46",
+          "hours": 13,
+          "machine_name_id": "63e18c93-7a55-4a4c-8d2b-f58a5f29a470",
+          "minutes": 14,
+          "name": "Unknown Hostname",
+          "percent": 99.82,
+          "seconds": 46,
+          "text": "13 hrs 14 mins",
+          "total_seconds": 47686.381000
+        },
+        {
+          "digital": "0:01:24",
+          "hours": 0,
+          "machine_name_id": "96d9119c-334b-486e-a4da-7a1896a4127c",
+          "minutes": 1,
+          "name": "MacBook-Prowf.local",
+          "percent": 0.18,
+          "seconds": 24,
+          "text": "1 min",
+          "total_seconds": 84.619000
+        }
+      ],
+      "operating_systems": [
+        {
+          "digital": "13:16:11",
+          "hours": 13,
+          "minutes": 16,
+          "name": "Mac",
+          "percent": 100.0,
+          "seconds": 11,
+          "text": "13 hrs 16 mins",
+          "total_seconds": 47771.000000
+        }
+      ],
+      "projects": [
+        {
+          "digital": "12:31:46",
+          "hours": 12,
+          "minutes": 31,
+          "name": "letao-auth",
+          "percent": 94.42,
+          "seconds": 46,
+          "text": "12 hrs 31 mins",
+          "total_seconds": 45106.381000
+        },
+        {
+          "digital": "0:44:24",
+          "hours": 0,
+          "minutes": 44,
+          "name": "jd-captcha",
+          "percent": 5.58,
+          "seconds": 24,
+          "text": "44 mins",
+          "total_seconds": 2664.619000
+        }
+      ],
+      "range": {
+        "date": "2020-09-11",
+        "end": "2020-09-11T15:59:59Z",
+        "start": "2020-09-10T16:00:00Z",
+        "text": "Fri Sep 11th 2020",
+        "timezone": "Asia/Shanghai"
+      }
+    },
+    {
+      "categories": [
+        {
+          "digital": "5:22:28",
+          "hours": 5,
+          "minutes": 22,
+          "name": "Browsing",
+          "percent": 95.12,
+          "seconds": 28,
+          "text": "5 hrs 22 mins",
+          "total_seconds": 19348.000000
+        },
+        {
+          "digital": "0:16:33",
+          "hours": 0,
+          "minutes": 16,
+          "name": "Debugging",
+          "percent": 4.88,
+          "seconds": 33,
+          "text": "16 mins",
+          "total_seconds": 993.000000
+        }
+      ],
+      "dependencies": [],
+      "editors": [
+        {
+          "digital": "5:39:01",
+          "hours": 5,
+          "minutes": 39,
+          "name": "Chrome",
+          "percent": 100.0,
+          "seconds": 1,
+          "text": "5 hrs 39 mins",
+          "total_seconds": 20341.000000
+        }
+      ],
+      "grand_total": {
+        "digital": "5:39",
+        "hours": 5,
+        "minutes": 39,
+        "text": "5 hrs 39 mins",
+        "total_seconds": 20341.000000
+      },
+      "languages": [
+        {
+          "digital": "5:39:01",
+          "hours": 5,
+          "minutes": 39,
+          "name": "Other",
+          "percent": 100.0,
+          "seconds": 1,
+          "text": "5 hrs 39 mins",
+          "total_seconds": 20341.000000
+        }
+      ],
+      "machines": [
+        {
+          "digital": "5:39:01",
+          "hours": 5,
+          "machine_name_id": "63e18c93-7a55-4a4c-8d2b-f58a5f29a470",
+          "minutes": 39,
+          "name": "Unknown Hostname",
+          "percent": 100.0,
+          "seconds": 1,
+          "text": "5 hrs 39 mins",
+          "total_seconds": 20341.000000
+        }
+      ],
+      "operating_systems": [
+        {
+          "digital": "5:39:01",
+          "hours": 5,
+          "minutes": 39,
+          "name": "Mac",
+          "percent": 100.0,
+          "seconds": 1,
+          "text": "5 hrs 39 mins",
+          "total_seconds": 20341.000000
+        }
+      ],
+      "projects": [
+        {
+          "digital": "5:39:01",
+          "hours": 5,
+          "minutes": 39,
+          "name": "jd-captcha",
+          "percent": 100.0,
+          "seconds": 1,
+          "text": "5 hrs 39 mins",
+          "total_seconds": 20341.000000
+        }
+      ],
+      "range": {
+        "date": "2020-09-12",
+        "end": "2020-09-12T15:59:59Z",
+        "start": "2020-09-11T16:00:00Z",
+        "text": "Sat Sep 12th 2020",
+        "timezone": "Asia/Shanghai"
+      }
+    }
+  ],
+  "end": "2020-09-12T15:59:59Z",
+  "start": "2020-09-10T16:00:00Z"
+}

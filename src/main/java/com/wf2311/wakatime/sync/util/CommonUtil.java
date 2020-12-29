@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,10 @@ public class CommonUtil {
     }
 
     private static final String SUB_PRE = "...";
+
+    public static boolean hasValue(String value) {
+        return !StringUtils.isEmpty(value) && !"false".equalsIgnoreCase(value);
+    }
 
     public static long getTimestamp(LocalDateTime time) {
         return Timestamp.valueOf(time).getTime();

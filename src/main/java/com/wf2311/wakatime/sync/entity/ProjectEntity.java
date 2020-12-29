@@ -54,6 +54,6 @@ public class ProjectEntity {
 
 
     public void setName(String name) {
-        this.name = CommonUtil.subStringIfOverLength(name, 50);
+        this.name = CommonUtil.subStringIfOverLength(name, 200);
     }
 }

@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.controller;
 
 import com.wf2311.wakatime.sync.domain.base.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2019-01-20 13:44.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -28,6 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public JsonResult defaultHandler(HttpServletRequest request, Exception e) {
+        log.error(e.getMessage(),e);
         return JsonResult.error("服务器异常");
     }
 }

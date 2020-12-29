@@ -160,7 +160,7 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
             if (s.isAfter(e)) {
                 throw new IllegalArgumentException();
             }
-            assertTimeInRange(s.toLocalDate());
+//            assertTimeInRange(s.toLocalDate());
             assertTimeInRange(e.toLocalDate());
             sql += " where day >=:start and day <=:end";
             parameters.addValue("start", start);

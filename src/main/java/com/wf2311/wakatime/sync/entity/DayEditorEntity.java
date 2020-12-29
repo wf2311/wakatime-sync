@@ -44,6 +44,6 @@ public class DayEditorEntity implements BaseDayEntity {
     private LocalDateTime createdTime;
 
     public void setName(String name) {
-        this.name = CommonUtil.subStringIfOverLength(name, 30);
+        this.name = CommonUtil.subStringIfOverLength(name, 100);
     }
 }

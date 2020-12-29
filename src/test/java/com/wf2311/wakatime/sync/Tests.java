@@ -105,7 +105,8 @@ public class Tests {
     }
     @Test
     public void syncCustom() {
-        LocalDate start = LocalDate.of(2019, 2, 3);
+//        LocalDate start = LocalDate.of(2019, 2, 3);
+        LocalDate start = LocalDate.now().minusDays(1);
         LocalDate end = LocalDate.now().minusDays(1);
         syncService.sync(start, end);
     }
@@ -124,6 +125,11 @@ public class Tests {
     public void testSendMessage() {
         LocalDate day = LocalDate.of(2019, 1, 19);
         messageFactory.sendDayWakatimeInfo(day);
+    }
+
+    @Test
+    public void test() {
+        syncService.sync(14);
     }
 }
 

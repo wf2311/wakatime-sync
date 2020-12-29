@@ -1,0 +1,62 @@
+server:
+  port: ${SERVER_PORT:3040}
+
+  undertow:
+    threads:
+      # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      # 不要设置过大，如果过大，启动项目会报错：打开文件数过多
+      io: 8
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程
+      # 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+      worker: 256
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可
+    buffer-size: 512
+    # 每个区分配的buffer数量 , 所以pool的大小是buffer-size * buffers-per-region
+    direct-buffers: true
+wakatime:
+  secret-api-key: ${WAKATIME_APP_KEY}  # wakatime app key
+  proxy-url: ${WAKATIME_PROXY_URL} # wakatime接口访问代理地址,例如：socks5://127.0.0.1:1080 或 http://127.0.0.1:1087，请根据实际情况配置
+  start-day: ${START_DAY:2016-02-01} # 起始记录时间
+  ftqq-key: ${WAKATIME_FTQQ_KEY} # Server酱 SCKEY @see http://sc.ftqq.com，为空表示不发生此类消息通知
+  dingding-key: ${wakatime.dingding.key} # 钉钉机器人token，为空表示不发生此类消息通知
+  fill-no-data-day: true # 活动图中如果某天没数据，是否要用空数据填充
+logging:
+  level:
+    root: info
+  config: classpath:log4j2-spring.xml
+spring:
+  application:
+    name: wakatime-sync
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    suffix: .html
+    prefix: classpath:/templates/
+  #  redis:
+  #    host: @redis.host@
+  #    port: '@redis.port@'
+  #    password: @redis.password@
+  datasource:
+    url: ${MYSQL_URL}
+    password: ${MYSQL_PASSWORD}
+    username: ${MYSQL_USERNAME}
+    hikari:
+      maximum-pool-size: 50
+      allow-pool-suspension: true
+
+  profiles:
+    active: dev
+
+management:
+  health:
+    redis:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}

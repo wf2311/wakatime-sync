@@ -58,7 +58,7 @@ public class DurationEntity {
 
 
     public void setProject(String project) {
-        this.project = CommonUtil.subStringIfOverLength(project, 50);
+        this.project = CommonUtil.subStringIfOverLength(project, 200);
     }
 
 }

@@ -10,21 +10,19 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
- * @since 2019-01-09 16:05.
+ * @since 2020/9/25 16:50.
  */
 @Data
-public class DaySummary {
+public class DumpDaySummary {
     private List<DayCategory> categories;
     private List<DayDependency> dependencies;
     private List<DayEditor> editors;
-    private List<DayEntity> entities;
     @JSONField(name = "grand_total")
     private DayGrandTotal grandTotal;
     private List<DayLanguage> languages;
     private List<DayMachine> machines;
     @JSONField(name = "operating_systems")
     private List<DayOperateSystem> system;
-    private List<DayProject> projects;
     @JsonIgnore
     private LocalDate date;
 }

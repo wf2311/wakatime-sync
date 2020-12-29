@@ -1,0 +1,80 @@
+variables:  #环境变量
+  #项目名称
+  APP_NAME: 'wakatime-sync'
+  #项目启动需要附加的jvm参数
+  JAVA_OPTS: '-Xmx256m -Xms128m -Xss512k'
+#  JVM_AGENT: '-javaagent:/home/app/lib/elastic-apm-agent.jar -Delastic.apm.server_urls=http://java.wf:8200 -Delastic.apm.service_name=wakatime-sync -Delastic.apm.application_packages=com.wf2311.wakatime.sync'
+  JVM_AGENT: '-javaagent:/home/app/lib/agent/skywalking-agent.jar -Dskywalking.agent.namespace=test -Dskywalking.agent.service_name=wakatime-sync'
+  #项目打包上传的docker仓库地址
+  REPOSITORY_HOST: 'harbor.wf:5010'
+  #项目打包的镜像名称
+  REPOSITORY_IMAGE: 'wf2311/wakatime-sync:1.0'
+  #远程docker仓库登录用户名
+  REPOSITORY_USER: 'admin'
+  #远程docker仓库登录密码
+  REPOSITORY_PASSWORD: 'pwd123'
+  #登录项目启动的所在机器的用户
+  SERVER_USER: 'root'
+  #项目启动的所在机器IP
+  SERVER_IP: 'java.wf'
+  #项目启动端口号
+  SERVER_PORT: '3040'
+  #项目启动脚本
+  DEPLOY_SHELL_URL: 'http://git.wf2311.com/wf2311/shells/-/raw/main/cicd/start-java-docker.sh'
+  WAKATIME_APP_KEY: 'a1873785-1b97-4ce0-bcdd-6b91351b238e'
+  WAKATIME_PROXY_URL: 'false'
+  WAKATIME_FTQQ_KEY: 'SCU39084T628931174fcf33b8a6fbd30cd35cbd4d5c34cd3fa50a3'
+  WAKATIME_DINGDING_KEY: '8e8242739200aadf3ed4d007cc15ce9774b73588beb567731cefbfb2d15c6ea7'
+  START_DAY: '2016-02-01'
+  MYSQL_URL: 'jdbc:mysql://mysql80.wf:3306/wakatime?characterEncoding=utf8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=PRC'
+  MYSQL_USERNAME: 'wf2311'
+  MYSQL_PASSWORD: 'MSQ4567st!'
+
+cache:  # 配置缓存，配置后，maven 下载的依赖可以被缓存起来，下次不需要重复去下载了
+  #key: dockerlayerdemo-ci-cache
+  paths:
+    - ~/.m2/repository
+    - target/*.jar
+stages:  #这是 Gitlab CI 中的概念，Stages 表示构建阶段，就是一些按序执行的流程，具体执行是依赖于 Jobs 的
+  - mvn package
+  - build and push docker image
+  - deploy
+maven-build:  #定义的 Jobs 之一，用于构建 jar 包。script 为具体执行的脚本
+  stage: mvn package
+  tags:
+    - dev-001
+  script:
+    - docker info
+    - mvn -DskipTests clean install  && mvn -DskipTests package
+  artifacts:
+    paths:
+      - target/*.jar
+docker-build: #定义的 Jobs 之一，将当前项目按照预先定义好的Dockerfile文件打包成docker镜像并上传到指定的docker仓库中
+  stage: build and push docker image
+  tags:
+    - dev-001
+  script:
+    - docker login $REPOSITORY_HOST -u$REPOSITORY_USER -p$REPOSITORY_PASSWORD
+    - docker build -t $REPOSITORY_HOST/$REPOSITORY_IMAGE .
+    - docker push $REPOSITORY_HOST/$REPOSITORY_IMAGE
+deploy:  #定义的 Jobs 之一，登录到目标服务器，然后执行指定的脚本，脚本的执行内容为：在指定docker仓库中下载最新的镜像，并启动
+  variables:
+    DOCKER_RUN_ENV: '-e SERVER_PORT=$SERVER_PORT'
+  stage: deploy
+  tags:
+    - dev-001
+  script:
+    - touch .env
+    - echo "SERVER_PORT=$SERVER_PORT" > .env
+    - echo "JAVA_OPTS=$JAVA_OPTS" >> .env
+    - echo "JVM_AGENT=$JVM_AGENT" >> .env
+    - echo "WAKATIME_APP_KEY=$WAKATIME_APP_KEY" >> .env
+    - echo "WAKATIME_PROXY_URL=$WAKATIME_PROXY_URL" >> .env
+    - echo "WAKATIME_FTQQ_KEY=$WAKATIME_FTQQ_KEY" >> .env
+    - echo "START_DAY=$START_DAY" >> .env
+    - echo "MYSQL_URL=$MYSQL_URL" >> .env
+    - echo "MYSQL_USERNAME=$MYSQL_USERNAME" >> .env
+    - echo "MYSQL_PASSWORD=$MYSQL_PASSWORD" >> .env
+    - ssh $SERVER_USER@$SERVER_IP "[ -d /home/apps/docker/$APP_NAME ] && echo ok || mkdir -p /home/apps/docker/$APP_NAME"
+    - scp -r .env $SERVER_USER@$SERVER_IP:/home/apps/docker/$APP_NAME/.env
+    - ssh $SERVER_USER@$SERVER_IP -o StrictHostKeyChecking=no "cd /home/apps/docker/$APP_NAME;wget -O start.sh $DEPLOY_SHELL_URL; chmod -R 777 start.sh;./start.sh  -n $APP_NAME -r $REPOSITORY_HOST -i $REPOSITORY_IMAGE -u $REPOSITORY_USER -p $REPOSITORY_PASSWORD -P $SERVER_PORT"
