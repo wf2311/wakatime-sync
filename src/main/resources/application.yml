@@ -17,7 +17,7 @@ server:
 wakatime:
   secret-api-key: ${WAKATIME_APP_KEY}  # wakatime app key
   proxy-url: ${WAKATIME_PROXY_URL} # wakatime接口访问代理地址,例如：socks5://127.0.0.1:1080 或 http://127.0.0.1:1087，请根据实际情况配置
-  start-day: ${START_DAY:2016-02-01} # 起始记录时间
+  start-day: ${START_DAY:2016-01-01} # 起始记录时间
   ftqq-key: ${WAKATIME_FTQQ_KEY} # Server酱 SCKEY @see http://sc.ftqq.com，为空表示不发生此类消息通知
   dingding-key: ${wakatime.dingding.key} # 钉钉机器人token，为空表示不发生此类消息通知
   fill-no-data-day: true # 活动图中如果某天没数据，是否要用空数据填充
@@ -43,7 +43,7 @@ spring:
       allow-pool-suspension: true
     driver-class-name: com.mysql.cj.jdbc.Driver
   profiles:
-    include: config
+    active: config
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
 
