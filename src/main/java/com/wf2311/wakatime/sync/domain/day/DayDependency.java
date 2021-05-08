@@ -8,14 +8,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * digital: "0:35:54",
- * hours: 0,
- * minutes: 35,
- * name: "varena.tournament",
- * percent: 10.64,
- * seconds: 54,
- * text: "35 mins",
- * total_seconds: 2154
+ * <pre>
+ *  {
+ *       "digital": "3:28:33",
+ *       "hours": 3,
+ *       "minutes": 28,
+ *       "name": "springframework.beans",
+ *       "percent": 10.93,
+ *       "seconds": 33,
+ *       "text": "3 hrs 28 mins",
+ *       "total_seconds": 12513.7979977130889892577775
+ *     }
+ * </pre>
  *
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-09 16:00.

@@ -8,14 +8,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * "digital": "8:09:38",
- * "hours": 8,
- * "minutes": 9,
- * "name": "IntelliJ",
- * "percent": 100,
- * "seconds": 38,
- * "text": "8 hrs 9 mins",
- * "total_seconds": 29378
+ * <pre>
+ *      {
+ *           "digital": "5:39:01",
+ *           "hours": 5,
+ *           "minutes": 39,
+ *           "name": "Chrome",
+ *           "percent": 100.0,
+ *           "seconds": 1,
+ *           "text": "5 hrs 39 mins",
+ *           "total_seconds": 20341.000000
+ *         }
+ * </pre>
  *
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-09 16:01.

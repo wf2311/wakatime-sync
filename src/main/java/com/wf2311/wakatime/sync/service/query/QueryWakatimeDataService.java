@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -160,11 +161,14 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
             if (s.isAfter(e)) {
                 throw new IllegalArgumentException();
             }
-            assertTimeInRange(s.toLocalDate());
+//            assertTimeInRange(s.toLocalDate());
             assertTimeInRange(e.toLocalDate());
             sql += " where day >=:start and day <=:end";
             parameters.addValue("start", start);
             parameters.addValue("end", end);
+        } else {
+            sql += " where day >=:start";
+            parameters.addValue("start", wakatimeProperties.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
         sql += " group by day";
         return namedParameterJdbcTemplate.query(sql, parameters, new DaySumMapper());

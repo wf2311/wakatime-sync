@@ -2,6 +2,7 @@ package com.wf2311.wakatime.sync.message;
 
 import com.alibaba.fastjson.JSON;
 import com.wf2311.wakatime.sync.domain.vo.SimpleDayDurationVo;
+import com.wf2311.wakatime.sync.util.CommonUtil;
 import jodd.http.HttpRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,7 @@ public class DingDingMessage extends AbstractMessage {
 
     @Override
     public void sendMessage(SimpleDayDurationVo info) {
-        if (StringUtils.isEmpty(wakatimeProperties.getDingdingKey())) {
+        if (!CommonUtil.hasValue(wakatimeProperties.getDingdingKey())) {
             log.info("未配置钉钉通知机器人，无效发送钉钉同步通知");
             return;
         }

@@ -79,7 +79,7 @@ public class ProjectDurationEntity {
 
 
     public void setBranch(String branch) {
-        this.branch = CommonUtil.subStringIfOverLength(branch, 20);
+        this.branch = CommonUtil.subStringIfOverLength(branch, 100);
     }
     public void setEntity(String entity) {
         this.entity = CommonUtil.subStringIfOverLength(entity, 255);
@@ -90,7 +90,7 @@ public class ProjectDurationEntity {
     }
 
     public void setProject(String project) {
-        this.project = CommonUtil.subStringIfOverLength(project, 50);
+        this.project = CommonUtil.subStringIfOverLength(project, 200);
     }
 
     public void setType(String type) {

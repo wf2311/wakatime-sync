@@ -1,0 +1,10 @@
+alter table day_category modify column name char(100);
+alter table day_editor modify column name char(100);
+alter table day_entity modify column type char(100);
+alter table day_entity modify column simple_name char(100);
+alter table day_project modify column name char(200);
+alter table duration modify column project char(200);
+alter table heart_beat modify column simple_name char(100);
+alter table project_duration modify column project char(200);
+alter table project_duration modify column branch char(100);
+alter table project modify column name char(200);

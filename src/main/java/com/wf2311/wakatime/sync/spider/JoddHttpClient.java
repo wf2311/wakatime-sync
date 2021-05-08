@@ -1,12 +1,12 @@
 package com.wf2311.wakatime.sync.spider;
 
 import com.wf2311.wakatime.sync.config.WakatimeProperties;
+import com.wf2311.wakatime.sync.util.CommonUtil;
 import jodd.http.HttpRequest;
 import jodd.http.HttpResponse;
 import jodd.http.ProxyInfo;
 import jodd.http.net.SocketHttpConnectionProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +61,7 @@ public class JoddHttpClient {
                     .trustAllCerts(true)
                     .query(params)
                     .timeout(1000 * 30);
-            if (StringUtils.isNotEmpty(WakatimeProperties.PROXY_URL)) {
+            if (CommonUtil.hasValue(WakatimeProperties.PROXY_URL)) {
                 SocketHttpConnectionProvider sp = new SocketHttpConnectionProvider();
                 sp.useProxy(getProxy(WakatimeProperties.PROXY_URL));
                 request.withConnectionProvider(sp);

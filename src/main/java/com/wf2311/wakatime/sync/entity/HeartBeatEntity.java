@@ -60,7 +60,7 @@ public class HeartBeatEntity {
 
 
     public void setSimpleName(String simpleName) {
-        this.simpleName = CommonUtil.subStringIfOverLength(simpleName, 50);
+        this.simpleName = CommonUtil.subStringIfOverLength(simpleName, 100);
     }
 
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,height=device-height">
     <title>WakaTime</title>
@@ -186,16 +186,20 @@ document.body.clientHeight;</script>
 <script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script th:inline="javascript">
+    var day = /*[[${startDay}]]*/ null ;
+    /**
+     * 起始时间，根据实际情况修改
+     */
+    const START_DAY = moment(day);
+</script>
 <script>
 
     function yesterday() {
         return moment(formatDay(moment().subtract(1, 'd')));
     }
 
-    /**
-     * 起始时间，根据实际情况修改
-     */
-    const START_DAY = moment('2020-02-01');
+    // const START_DAY = moment('2016-02-15');
 
     let vm = new Vue({
         el: '#app',

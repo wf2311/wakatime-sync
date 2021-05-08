@@ -59,12 +59,12 @@ public class DayEntityEntity implements BaseDayEntity {
     }
 
     public void setSimpleName(String simpleName) {
-        this.simpleName = CommonUtil.subStringIfOverLength(simpleName, 50);
+        this.simpleName = CommonUtil.subStringIfOverLength(simpleName, 100);
     }
 
 
     public void setType(String type) {
-        this.type = CommonUtil.subStringIfOverLength(type, 20);
+        this.type = CommonUtil.subStringIfOverLength(type, 100);
     }
 
 }

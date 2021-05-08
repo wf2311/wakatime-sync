@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-09 16:02.
  */
+@Deprecated
 public class DayEntity extends BaseWakatimeData {
     public DayEntityEntity convert(LocalDate day, LocalDateTime createdTime) {
         DayEntityEntity t = new DayEntityEntity();
