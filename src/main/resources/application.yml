@@ -34,10 +34,6 @@ spring:
     encoding: UTF-8
     suffix: .html
     prefix: classpath:/templates/
-  #  redis:
-  #    host: @redis.host@
-  #    port: '@redis.port@'
-  #    password: @redis.password@
   datasource:
     url: ${MYSQL_URL}
     password: ${MYSQL_PASSWORD}
@@ -45,9 +41,11 @@ spring:
     hikari:
       maximum-pool-size: 50
       allow-pool-suspension: true
-
+    driver-class-name: com.mysql.cj.jdbc.Driver
   profiles:
-    active: dev
+    include: config
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
 
 management:
   health:

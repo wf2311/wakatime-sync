@@ -4,7 +4,7 @@ variables:  #环境变量
   #项目启动需要附加的jvm参数
   JAVA_OPTS: '-Xmx256m -Xms128m -Xss512k'
 #  JVM_AGENT: '-javaagent:/home/app/lib/elastic-apm-agent.jar -Delastic.apm.server_urls=http://java.wf:8200 -Delastic.apm.service_name=wakatime-sync -Delastic.apm.application_packages=com.wf2311.wakatime.sync'
-  JVM_AGENT: '-javaagent:/home/app/lib/agent/skywalking-agent.jar -Dskywalking.agent.namespace=test -Dskywalking.agent.service_name=wakatime-sync'
+#  JVM_AGENT: '-javaagent:/home/app/lib/agent/skywalking-agent.jar -Dskywalking.agent.namespace=test -Dskywalking.agent.service_name=wakatime-sync'
   #项目打包上传的docker仓库地址
   REPOSITORY_HOST: 'harbor.wf:5010'
   #项目打包的镜像名称
@@ -67,7 +67,7 @@ deploy:  #定义的 Jobs 之一，登录到目标服务器，然后执行指定�
     - touch .env
     - echo "SERVER_PORT=$SERVER_PORT" > .env
     - echo "JAVA_OPTS=$JAVA_OPTS" >> .env
-    - echo "JVM_AGENT=$JVM_AGENT" >> .env
+#    - echo "JVM_AGENT=$JVM_AGENT" >> .env
     - echo "WAKATIME_APP_KEY=$WAKATIME_APP_KEY" >> .env
     - echo "WAKATIME_PROXY_URL=$WAKATIME_PROXY_URL" >> .env
     - echo "WAKATIME_FTQQ_KEY=$WAKATIME_FTQQ_KEY" >> .env
