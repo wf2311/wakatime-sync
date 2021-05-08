@@ -19,12 +19,46 @@
             <PatternLayout pattern="%d [%t] %-5p [%c] - %m%n"/>
         </Console>
 
-        <!--business的日志记录追加器-->
+        <!--info级别的日志记录追加器-->
         <RollingRandomAccessFile name="infoFile" fileName="${LOG_HOME}/info.log" immediateFlush="false"
                                  append="true"
                                  filePattern="${LOG_HOME}/info-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d [%t] %-5p [%c] - %m%n"/>
             <!--    接受${LOG_INFO_LEVEL}及其以下等级的日志    -->
+            <Filters>
+                <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+                <ThresholdFilter level="${LOG_INFO_LEVEL}" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1000 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+
+        <!--error的日志记录追加器-->
+        <RollingRandomAccessFile name="errorFile" fileName="${LOG_HOME}/error.log" immediateFlush="false"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/error-%d{yyyy-MM-dd}-%i.log.gz">
+            <!--    接受WARN及其以上等级的日志    -->
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="%d [%t] %-5p [%c] - %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1000 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+
+        <!--同步成功的日志记录追加器-->
+        <RollingRandomAccessFile name="syncFile" fileName="${LOG_HOME}/sync.log" immediateFlush="false"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/sync-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d [%t] %-5p [%c] - %m%n"/>
+            <!--    接受INFO及其以下等级的日志    -->
             <Filters>
                 <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
                 <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
@@ -36,10 +70,10 @@
             <DefaultRolloverStrategy max="15"/>
         </RollingRandomAccessFile>
 
-        <!--exception的日志记录追加器-->
-        <RollingRandomAccessFile name="errorFile" fileName="${LOG_HOME}/error.log" immediateFlush="false"
+        <!--同步失败的日志记录追加器-->
+        <RollingRandomAccessFile name="syncFailFile" fileName="${LOG_HOME}/sync-fail.log" immediateFlush="false"
                                  append="true"
-                                 filePattern="${LOG_HOME}/error-%d{yyyy-MM-dd}-%i.log.gz">
+                                 filePattern="${LOG_HOME}/sync-fail-%d{yyyy-MM-dd}-%i.log.gz">
             <!--    接受WARN及其以上等级的日志    -->
             <Filters>
                 <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -57,8 +91,9 @@
             <appender-ref ref="Console"/>
             <appender-ref ref="infoFile"/>
             <appender-ref ref="errorFile"/>
+            <appender-ref ref="syncFile"/>
+            <appender-ref ref="syncFailFile"/>
         </Async>
-
     </appenders>
 
     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
@@ -69,6 +104,14 @@
 
         <AsyncLogger name="com.alibaba.nacos.client" level="ERROR" additivity="false">
             <appender-ref ref="Console"/>
+        </AsyncLogger>
+        <AsyncLogger name="syncLog" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="syncFile"/>
+        </AsyncLogger>
+        <AsyncLogger name="syncLogFail" level="error" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="syncFailFile"/>
         </AsyncLogger>
 
         <AsyncLogger name="com.wf2311" level="${LOG_INFO_LEVEL}" additivity="false">
