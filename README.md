@@ -1,35 +1,76 @@
 # wakatime-sync
 
-## quick start
-### 简介
-* 更新 `mysql` 版本到 `8.0`
-* 此版本的 `Dockerfile` 使用分阶段构建，不需要宿主机安装 `maven` 环境
+## 数据库准备
+建好MySQL数据库后后，按序号顺序依次执行`sql`目录下的sql脚本
 
-### 构建方法
-1. 使用 `sql/wakatime_sync.sql` 文件创建需要的表格
-2. 从模板复制一份你自己的配置文件，在 `application.yml` 文件中补全 `api-key` 等信息
+## 参数说明：
+
+|参数 | 含义 | 默认值|
+| --- | --- | --- |
+| SERVER_PORT | 服务端口号 | 3040 |
+| WAKATIME_APP_KEY | wakatime app key | <nil> |
+| WAKATIME_PROXY_URL | wakatime接口访问代理地址,例如：socks5://127.0.0.1:1080 请根据实际情况配置 | false,表示不开启代理 |
+| WAKATIME_FTQQ_KEY | Server酱 SCKEY,见http://sc.ftqq.com，为空表示不发生此类消息通知 | <nil> |
+| WAKATIME_DINGDING_KEY | 钉钉机器人token，为空表示不发生此类消息通知 | <nil> |
+| START_DAY | 起始记录时间 | 2016-01-01 |
+| MYSQL_URL | MySQL连接地址 | jdbc:mysql://127.0.0.1:3306/wakatime?characterEncoding=utf8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=PRC |
+| MYSQL_USERNAME | MySQL用户名 | wakatime |
+| MYSQL_PASSWORD | MySQL密码 | 123456 |
+| JVM_OPTS | JVM运行参数，以容器方式启动时有用 | -Xmx256m -Xms64m -Xss256k |
+
+## quick start
+
+### 本地调试
+1. 根据说明，完善`src/main/resources/application-config.properties`中的参数
+2. 运行`WakatimeSyncApplication`启动类；
+
+### 构建Docker镜像
 ```shell
-cp src/main/resources/application.example.yml src/main/resources/application.yml
+mvn -DskipTests clean package
+docker build -t wf2311/wakatime-sync:1.0 .
 ```
-3. 根据实际情况，修改 `src/main/resources/templates/dashboard.html` 文件中的 `START_DAY` 的值
-4. 构建你自己的镜像
+
+## 使用容器运行
+### docker方式
+
 ```shell
-cd wakatime-sync \
-&& docker build -t wakatime-sync .
+docker run -d -t  -p 3040:3040 -v ~/logs/wakatime-sync/:/application/logs \
+-e JAVA_OPTS='-Xmx256m -Xms64m -Xss256k' \
+-e SERVER_PORT='3040' \
+-e WAKATIME_APP_KEY='<WAKATIME_APP_KEY>' \
+-e WAKATIME_PROXY_URL='false' \
+-e WAKATIME_FTQQ_KEY='<WAKATIME_FTQQ_KEY>' \
+-e WAKATIME_DINGDING_KEY='<WAKATIME_DINGDING_KEY>' \
+-e START_DAY='2020-01-01' \
+-e MYSQL_URL='jdbc:mysql://<ip:port>/wakatime?characterEncoding=utf8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=PRC' \
+-e MYSQL_USERNAME='wakatime' \
+-e MYSQL_PASSWORD='123456' \
+--name wakatime-sync wf2311/wakatime-sync:1.0
 ```
-5. 启动它，其中 `/var/www/log` 文件夹，用于保存日志文件 `server.log`
-```shell
-docker run -d \
--v /your/path/to/log:/var/www/log \
--p <your-port>:3040 \
---name wakatime \
-wakatime-sync
-```
-6. 此项目每天都会自动爬取前一天的记录。如果需要导入历史数据，你可以手动调用项目的接口：
-```shell
-curl -X POST http://<your-domain>:<your-port>/api/v1/sync \
--d day=<sync-days-num> \
--d apiKey=<your-wakatime-api-key>
+
+### docker-compose
+docker-compose.yml文件
+```yaml
+version: "3"
+services:
+  wakatime-sync:
+    image: wf2311/wakatime-sync:1.0
+    container_name: wakatime-sync
+    environment:
+      - JAVA_OPTS=-Xmx256m -Xms64m -Xss256k
+      - SERVER_PORT=3040
+      - WAKATIME_APP_KEY=<WAKATIME_APP_KEY>
+      - WAKATIME_PROXY_URL=false
+      - WAKATIME_FTQQ_KEY=<WAKATIME_FTQQ_KEY>
+      - WAKATIME_DINGDING_KEY=<WAKATIME_DINGDING_KEY>
+      - START_DAY=2016-02-01
+      - MYSQL_URL=jdbc:mysql://<ip:port>/wakatime?characterEncoding=utf8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=PRC
+      - MYSQL_USERNAME=wakatime
+      - MYSQL_PASSWORD=123456
+    volumes:
+      - ~/Share/logs/wakatime-sync/:/application/logs
+    ports:
+      - "3040:3040"
 ```
 
 ### 注意事项
@@ -41,8 +82,14 @@ jdbc:mysql://<mysql-ip>:<mysql-port>/<mysql-db>?characterEncoding=utf8&...
 2. 使用 `jre` 或者 `jdk` 的镜像，`oracle` 可能会要求使用者进行一些验证，详见：
 > https://blog.csdn.net/wengyupeng/article/details/87897866
 
+3. 此项目每天都会自动爬取前一天的记录。如果需要导入历史数据，你可以手动调用项目的接口：
+```shell
+curl -X POST http://<your-domain>:<your-port>/api/v1/sync \
+-d day=<sync-days-num> \
+-d apiKey=<your-wakatime-api-key>
+```
 ---
-以下为原项目的 README
+
 
 ### WakaTime简介 
 [WakaTime](https://wakatime.com/) 是一款可以记录你的编码时间的工具，目前支持绝大部分主流的 IDE 以及 Chrome 浏览器。
@@ -118,6 +165,10 @@ jdbc:mysql://<mysql-ip>:<mysql-port>/<mysql-db>?characterEncoding=utf8&...
 - [ ] 可以对项目名称设置别名展示；
 
 ## 更新记录
+### 2021-05-09
+- 使用SpringBoot分层jar包进行构建Docker镜像
+- 优化使用Docker运行时的参数传递
+- 添加DockerCompose运行说明
 ### 2019-02-08
 - 添加获取 wakatime api 数据接口的代理配置，解决 Wakatime 网站被墙导致无法获取接口数据的问题；
 ### 2019-02-02
