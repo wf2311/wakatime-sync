@@ -165,6 +165,8 @@ curl -X POST http://<your-domain>:<your-port>/api/v1/sync \
 - [ ] 可以对项目名称设置别名展示；
 
 ## 更新记录
+### 2021-08-31
+- Server酱更新至新版推送方式，参见[Server酱](https://sct.ftqq.com/sendkey)，需要修改新的SendKey
 ### 2021-05-09
 - 使用SpringBoot分层jar包进行构建Docker镜像
 - 优化使用Docker运行时的参数传递

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.wf2311.wakatime.sync.domain.vo.SimpleDayDurationVo;
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import jodd.http.HttpRequest;
+import jodd.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,13 @@ public class DingDingMessage extends AbstractMessage {
         String title = getMessageTitle(info.getDay());
         String content = formatMarkdownMessage(info);
         try {
-            HttpRequest
+            HttpResponse resp = HttpRequest
                     .post(String.format(DINGDING_WEB_HOOK_URL, wakatimeProperties.getDingdingKey()))
                     .bodyText(formatMessageContent(title, content), "application/json; charset=utf-8")
                     .send();
+            if (log.isDebugEnabled()) {
+                log.debug("response:{}", resp.bodyText());
+            }
         } catch (Exception e) {
             log.error(String.format("发送【%s】钉钉消息失败，错误原因：\n%s", title, e.getMessage()), e);
         }
