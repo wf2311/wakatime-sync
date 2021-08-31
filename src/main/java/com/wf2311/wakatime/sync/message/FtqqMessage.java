@@ -3,8 +3,8 @@ package com.wf2311.wakatime.sync.message;
 import com.wf2311.wakatime.sync.domain.vo.SimpleDayDurationVo;
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import jodd.http.HttpRequest;
+import jodd.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class FtqqMessage extends AbstractMessage {
-    private static final String FTQQ_URL = "https://sc.ftqq.com/%s.send";
+    private static final String FTQQ_URL = "https://sctapi.ftqq.com/%s.send";
 
 
     @Override
@@ -26,12 +26,15 @@ public class FtqqMessage extends AbstractMessage {
         String title = getMessageTitle(info.getDay());
         String content = formatMarkdownMessage(info);
         try {
-            HttpRequest
+            HttpResponse resp = HttpRequest
                     .post(String.format(FTQQ_URL, wakatimeProperties.getFtqqKey()))
-                    .contentType("application/json; charset=utf-8")
-                    .query("text", title)
-                    .query("desp", content)
+                    .contentType("application/x-www-form-urlencoded")
+                    .form("title", title)
+                    .form("desp", content)
                     .send();
+            if (log.isDebugEnabled()) {
+                log.debug("response:{}", resp.bodyText());
+            }
         } catch (Exception e) {
             log.error(String.format("发送【%s】ftqq消息失败，错误原因：\n%s", title, e.getMessage()), e);
         }

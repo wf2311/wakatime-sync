@@ -123,7 +123,7 @@ public class Tests {
 
     @Test
     public void testSendMessage() {
-        LocalDate day = LocalDate.of(2019, 1, 19);
+        LocalDate day = LocalDate.now().minusDays(5);
         messageFactory.sendDayWakatimeInfo(day);
     }
 
