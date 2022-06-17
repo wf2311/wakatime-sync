@@ -1,6 +1,6 @@
 package com.wf2311.wakatime.sync.domain.day;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wf2311.wakatime.sync.domain.base.BaseWakatimeData;
 import lombok.Data;
 
@@ -18,11 +18,12 @@ import lombok.Data;
  *           "total_seconds": 47686.381000
  *         }
  * </pre>
+ *
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2020/9/27 19:04.
  */
 @Data
 public class DayMachine extends BaseWakatimeData {
-    @JSONField(name = "machine_name_id")
+    @JsonProperty("machine_name_id")
     private String machineNameId;
 }

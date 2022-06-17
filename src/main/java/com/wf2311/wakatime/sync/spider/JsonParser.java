@@ -1,12 +1,11 @@
 package com.wf2311.wakatime.sync.spider;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.wf2311.wakatime.sync.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
@@ -14,14 +13,15 @@ import java.util.List;
  */
 public class JsonParser {
     public static <T> List<T> parseList(String s, Class<T> cls) {
-        JSONObject object = JSONObject.parseObject(s);
-        JSONArray data = object.getJSONArray("data");
-        return data.toJavaList(cls);
+        Map<String, Object> map = JsonUtil.toMap(s);
+        String data = JsonUtil.toJson(map.get("data"));
+        return JsonUtil.toList(data, cls);
     }
 
     public static <T> T parse(String s, Class<T> cls) {
-        JSONObject object = JSONObject.parseObject(s);
-        return JSON.parseObject(object.getString("data"), cls);
+        Map<String, Object> map = JsonUtil.toMap(s);
+        String data = JsonUtil.toJson(map.get("data"));
+        return JsonUtil.toObject(data, cls);
     }
 
     public static List<String> parseDependencies(String text) {
@@ -29,7 +29,7 @@ public class JsonParser {
             return Collections.emptyList();
         }
         try {
-            return JSONArray.parseArray(text, String.class);
+            return JsonUtil.toList(text, String.class);
         } catch (Exception e) {
             return Collections.singletonList(text);
         }

@@ -1,6 +1,6 @@
 package com.wf2311.wakatime.sync.domain.base;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -13,7 +13,7 @@ public class BaseWakatimeData {
     protected Integer hours = 0;
     protected Integer minutes = 0;
     protected Integer seconds = 0;
-    @JSONField(name = "total_seconds")
+    @JsonProperty("total_seconds")
     protected Integer totalSeconds = 0;
     protected String text;
     protected String day;

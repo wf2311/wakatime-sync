@@ -117,12 +117,6 @@
             <artifactId>jodd-http</artifactId>
             <version>6.2.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.31</version>
-        </dependency>
         <dependency>
             <groupId>com.wf2311</groupId>
             <artifactId>jfeng-datetime</artifactId>

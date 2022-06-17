@@ -1,13 +1,11 @@
 package com.wf2311.wakatime.sync.message;
 
-import com.alibaba.fastjson.JSON;
 import com.wf2311.wakatime.sync.domain.vo.SimpleDayDurationVo;
 import com.wf2311.wakatime.sync.util.CommonUtil;
+import com.wf2311.wakatime.sync.util.JsonUtil;
 import jodd.http.HttpRequest;
 import jodd.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
@@ -50,6 +48,6 @@ public class DingDingMessage extends AbstractMessage {
         l2.put("text", "#### " + title + "\n" + content);
         l1.put("msgtype", "markdown");
         l1.put("markdown", l2);
-        return JSON.toJSONString(l1);
+        return JsonUtil.toJson(l1);
     }
 }

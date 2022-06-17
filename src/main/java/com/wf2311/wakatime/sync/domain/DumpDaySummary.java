@@ -1,7 +1,7 @@
 package com.wf2311.wakatime.sync.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wf2311.wakatime.sync.domain.day.*;
 import lombok.Data;
 
@@ -17,11 +17,11 @@ public class DumpDaySummary {
     private List<DayCategory> categories;
     private List<DayDependency> dependencies;
     private List<DayEditor> editors;
-    @JSONField(name = "grand_total")
+    @JsonProperty("grand_total")
     private DayGrandTotal grandTotal;
     private List<DayLanguage> languages;
     private List<DayMachine> machines;
-    @JSONField(name = "operating_systems")
+    @JsonProperty("operating_systems")
     private List<DayOperateSystem> system;
     @JsonIgnore
     private LocalDate date;

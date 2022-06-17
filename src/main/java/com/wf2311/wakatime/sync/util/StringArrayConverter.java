@@ -1,6 +1,5 @@
 package com.wf2311.wakatime.sync.util;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.AttributeConverter;
@@ -18,7 +17,7 @@ public class StringArrayConverter implements AttributeConverter<List<String>, St
         if (list == null || list.isEmpty()) {
             return "[]";
         }
-        return JSON.toJSONString(list);
+        return JsonUtil.toJson(list);
     }
 
     @Override
@@ -26,6 +25,6 @@ public class StringArrayConverter implements AttributeConverter<List<String>, St
         if (StringUtils.isEmpty(s)) {
             return Collections.emptyList();
         }
-        return JSON.parseArray(s, String.class);
+        return JsonUtil.toList(s, String.class);
     }
 }

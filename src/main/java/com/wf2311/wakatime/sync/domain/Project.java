@@ -1,6 +1,6 @@
 package com.wf2311.wakatime.sync.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -9,10 +9,10 @@ import lombok.Data;
  */
 @Data
 public class Project {
-    @JSONField(name = "id")
+    @JsonProperty( "id")
     private String uuid;
     private String name;
-    @JSONField(name = "public_url")
+    @JsonProperty( "public_url")
     private String publicUrl;
     private String repository;
     private String privacy;

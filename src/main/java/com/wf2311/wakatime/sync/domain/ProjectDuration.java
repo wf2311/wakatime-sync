@@ -1,6 +1,6 @@
 package com.wf2311.wakatime.sync.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -14,10 +14,10 @@ public class ProjectDuration {
     private String entity;
     private String language;
     private String type;
-    @JSONField(name = "is_debugging")
+    @JsonProperty("is_debugging")
     private Boolean isDebugging;
     private String project;
-    @JSONField(name = "time")
+    @JsonProperty("time")
     private Double second;
     private Double duration;
 }

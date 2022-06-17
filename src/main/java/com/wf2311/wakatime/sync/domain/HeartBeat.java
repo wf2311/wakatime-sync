@@ -1,7 +1,7 @@
 package com.wf2311.wakatime.sync.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -11,9 +11,9 @@ import lombok.Data;
 @Data
 public class HeartBeat {
     private String entity;
-    @JSONField(name = "id")
+    @JsonProperty( "id")
     private String uuid;
-    @JSONField(name = "time")
+    @JsonProperty("time")
     private Double timestamp;
     private String type;
     @JsonIgnore
