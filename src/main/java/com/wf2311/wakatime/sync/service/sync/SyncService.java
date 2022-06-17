@@ -2,26 +2,27 @@ package com.wf2311.wakatime.sync.service.sync;
 
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 16:21.
  */
-@Service
+@ApplicationScoped
 @Slf4j
 public class SyncService {
 
-    @Resource
-    private DurationService durationService;
-    @Resource
-    private HeartBeatService heartBeatService;
-    @Resource
-    private DaySummaryService daySummaryService;
+    @Inject
+    DurationService durationService;
+    @Inject
+    HeartBeatService heartBeatService;
+    @Inject
+    DaySummaryService daySummaryService;
 
     //    @Transactional(rollbackFor = Exception.class)
     public void sync(LocalDate start, LocalDate end) {
@@ -42,7 +43,7 @@ public class SyncService {
         daySummaryService.sync(day);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackOn = Exception.class)
     public void syncLastDay() {
         LocalDate start = LocalDate.now().minusDays(1);
         sync(start, start);

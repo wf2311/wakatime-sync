@@ -8,10 +8,10 @@ import com.wf2311.wakatime.sync.repository.DaySummaryQueryHandler;
 import com.wf2311.wakatime.sync.service.AbstractDaySummaryService;
 import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import com.wf2311.wakatime.sync.util.CommonUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 14:33.
  */
-@Service
+@ApplicationScoped
 public class DaySummaryService extends AbstractDaySummaryService {
 
     /**
@@ -40,7 +40,7 @@ public class DaySummaryService extends AbstractDaySummaryService {
         insert(summary);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackOn = Exception.class)
     public void insert(DaySummary summary) {
         if (summary == null) {
             return;
@@ -53,7 +53,7 @@ public class DaySummaryService extends AbstractDaySummaryService {
         }
         LocalDate day = summary.getDate();
         deleteDataIfNotNull(day, dayGrandTotalRepository);
-        dayGrandTotalRepository.save(grandTotal);
+        dayGrandTotalRepository.persist(grandTotal);
         saveDayData(day, converter.getCategories(), DayCategoryEntity.class);
         saveDayData(day, converter.getDependencies(), DayDependencyEntity.class);
         saveDayData(day, converter.getEditors(), DayEditorEntity.class);
@@ -67,7 +67,7 @@ public class DaySummaryService extends AbstractDaySummaryService {
         if (!CollectionUtils.isEmpty(list)) {
             DaySummaryQueryHandler handler = dayRepositoryMap.get(clazz);
             deleteDataIfNotNull(day, handler);
-            handler.saveAll(list);
+            handler.persist(list);
             CommonUtil.syncLog().info(String.format("%s：%d条", clazz.getSimpleName(), list.size()));
         }
     }

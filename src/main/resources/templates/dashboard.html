@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head xmlns:th="http://www.thymeleaf.org">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,height=device-height">
     <title>WakaTime</title>
@@ -175,25 +175,29 @@
     </template>
 </div>
 <script>/*Fixing iframe window.innerHeight 0 issue in Safari*/
-document.body.clientHeight;</script>
+    document.body.clientHeight;</script>
 <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.4.10/dist/g2.min.js"></script>
 <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/echarts/4.1.0/echarts.min.js"></script>
 <script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
 <script src="https://cdn.bootcss.com/moment-duration-format/2.2.2/moment-duration-format.min.js"></script>
-<script th:src="@{/js/wakatime.js}"></script>
 <script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"/>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script th:inline="javascript">
-    var day = /*[[${startDay}]]*/ null ;
+<script src="/js/wakatime.js"></script>
+<script>
+    var day = {startDay}
     /**
      * 起始时间，根据实际情况修改
      */
     const START_DAY = moment(day);
 </script>
 <script>
+
+    function formatDay(date) {
+        return moment(date).format('YYYY-MM-DD')
+    }
 
     function yesterday() {
         return moment(formatDay(moment().subtract(1, 'd')));

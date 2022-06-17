@@ -2,6 +2,7 @@ package com.wf2311.wakatime.sync.convert;
 
 import com.wf2311.wakatime.sync.domain.DaySummary;
 import com.wf2311.wakatime.sync.entity.*;
+import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 14:44.
  */
+@Data
 public class DaySummaryConverter {
     private DaySummary summary;
     private LocalDate day;
@@ -63,46 +65,5 @@ public class DaySummaryConverter {
         if (!CollectionUtils.isEmpty(summary.getProjects())) {
             this.projects = summary.getProjects().stream().map(s -> s.convert(day, now)).collect(Collectors.toList());
         }
-    }
-
-
-    public DaySummary getSummary() {
-        return summary;
-    }
-
-    public LocalDate getDay() {
-        return day;
-    }
-
-    public List<DayEditorEntity> getEditors() {
-        return editors;
-    }
-
-    public List<DayEntityEntity> getEntities() {
-        return entities;
-    }
-
-    public List<DayCategoryEntity> getCategories() {
-        return categories;
-    }
-
-    public List<DayDependencyEntity> getDependencies() {
-        return dependencies;
-    }
-
-    public List<DayLanguageEntity> getLanguages() {
-        return languages;
-    }
-
-    public List<DayOperateSystemEntity> getOperateSystems() {
-        return operateSystems;
-    }
-
-    public List<DayProjectEntity> getProjects() {
-        return projects;
-    }
-
-    public DayGrandTotalEntity getGrandTotal() {
-        return grandTotal;
     }
 }

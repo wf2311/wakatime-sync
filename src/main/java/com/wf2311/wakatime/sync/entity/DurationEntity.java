@@ -2,6 +2,7 @@ package com.wf2311.wakatime.sync.entity;
 
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import com.wf2311.wakatime.sync.util.StringArrayConverter;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "duration")
-public class DurationEntity {
+public class DurationEntity extends PanacheEntityBase {
     /**
      * 主键
      */

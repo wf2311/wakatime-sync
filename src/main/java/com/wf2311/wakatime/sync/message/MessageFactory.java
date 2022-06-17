@@ -5,19 +5,21 @@ import com.wf2311.wakatime.sync.service.query.QueryWakatimeDataService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.time.LocalDate;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-17 23:19.
  */
-@Component
+@ApplicationScoped
 public class MessageFactory {
-    @Resource
+    @Inject
     private QueryWakatimeDataService queryWakatimeDataService;
-    @Resource
+    @Inject
     private FtqqMessage ftqqMessage;
-    @Resource
+    @Inject
     private DingDingMessage dingDingMessage;
 
     public void sendDayWakatimeInfo(LocalDate day) {

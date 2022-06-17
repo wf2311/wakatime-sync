@@ -5,6 +5,7 @@ import com.wf2311.wakatime.sync.repository.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,21 +14,21 @@ import java.util.Map;
  * @since 2019-01-10 14:37.
  */
 public abstract class AbstractDaySummaryService {
-    @Resource
+    @Inject
     protected DayCategoryRepository dayCategoryRepository;
-    @Resource
+    @Inject
     protected DayDependencyRepository dayDependencyRepository;
-    @Resource
+    @Inject
     protected DayEditorRepository dayEditorRepository;
-    @Resource
+    @Inject
     protected DayEntityRepository dayEntityRepository;
-    @Resource
+    @Inject
     protected DayGrandTotalRepository dayGrandTotalRepository;
-    @Resource
+    @Inject
     protected DayLanguageRepository dayLanguageRepository;
-    @Resource
+    @Inject
     protected DayOperateSystemRepository dayOperateSystemRepository;
-    @Resource
+    @Inject
     protected DayProjectRepository dayProjectRepository;
 
     protected final Map<Class<? extends BaseDayEntity>, DaySummaryQueryHandler> dayRepositoryMap = new HashMap<>(8);

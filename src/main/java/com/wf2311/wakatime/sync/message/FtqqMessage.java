@@ -7,11 +7,13 @@ import jodd.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.enterprise.context.ApplicationScoped;
+
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-17 22:49.
  */
-@Component
+@ApplicationScoped
 @Slf4j
 public class FtqqMessage extends AbstractMessage {
     private static final String FTQQ_URL = "https://sctapi.ftqq.com/%s.send";

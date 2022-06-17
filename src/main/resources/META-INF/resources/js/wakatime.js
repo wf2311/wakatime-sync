@@ -17,9 +17,6 @@ function groupBy(list, keyGetter) {
     return map;
 }
 
-function formatDay(date) {
-    return moment(date).format('YYYY-MM-DD')
-}
 
 Array.prototype.sum = function (prop) {
     let total = 0;

@@ -10,10 +10,12 @@ import com.wf2311.wakatime.sync.repository.ProjectDurationRepository;
 import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,17 +27,18 @@ import static java.util.stream.Collectors.toList;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 14:34.
  */
-@Service
+@ApplicationScoped
+
 public class DurationService {
-    @Resource
-    private DurationRepository durationRepository;
-    @Resource
-    private ProjectDurationRepository projectDurationRepository;
+    @Inject
+    DurationRepository durationRepository;
+    @Inject
+    ProjectDurationRepository projectDurationRepository;
 
     /**
      * 同步某天的数据
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackOn = Exception.class)
     public int sync(LocalDate day) {
         long local = durationRepository.countByDay(day);
         List<Duration> vos = WakaTimeDataSpider.duration(day);
@@ -47,7 +50,7 @@ public class DurationService {
         List<DurationEntity> durations = DurationConverter.of(vos).getDurations();
         if (!CollectionUtils.isEmpty(durations)) {
             deleteDataIfNotNull(day);
-            durationRepository.saveAll(durations);
+            durationRepository.persist(durations);
             saveProjectDuration(day, getProjectDuration(day, durations));
         }
         int num = (int) (remote - local);
@@ -82,7 +85,7 @@ public class DurationService {
         if (existCount > 0) {
             projectDurationRepository.deleteByDay(day);
         }
-        projectDurationRepository.saveAll(durations);
+        projectDurationRepository.persist(durations);
     }
 
     private List<ProjectDurationEntity> getProjectDuration(LocalDate day, String project) {

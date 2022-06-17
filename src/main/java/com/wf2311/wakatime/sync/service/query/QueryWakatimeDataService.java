@@ -8,15 +8,17 @@ import com.wf2311.wakatime.sync.entity.DurationEntity;
 import com.wf2311.wakatime.sync.repository.DurationRepository;
 import com.wf2311.wakatime.sync.service.AbstractDaySummaryService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LocalDateType;
+import org.hibernate.type.StringType;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,13 +33,13 @@ import java.util.stream.IntStream;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 22:31.
  */
-@Service
+@ApplicationScoped
 public class QueryWakatimeDataService extends AbstractDaySummaryService {
-    @Resource
+    @Inject
     private DurationRepository durationRepository;
-    @Resource
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Resource
+    @Inject
+    EntityManager entityManager;
+    @Inject
     private WakatimeProperties wakatimeProperties;
 
     private void assertTimeInRange(LocalDate day) {
@@ -134,27 +136,29 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
 
     }
 
+    /**
+     * @param type
+     * @param start
+     * @param end
+     * @return
+     * @see https://stackoverflow.com/questions/13012584/jpa-how-to-convert-a-native-query-result-set-to-pojo-class-collection
+     */
     private List<DayTypeGroupSummaryUnit> selectDayTypeGroupSummaries(String type, LocalDate start, LocalDate end) {
-        String sql = "select name,sum(total_seconds) as total from " + type + " where day >=:start and day <=:end group by name";
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("start", start);
-        parameters.addValue("end", end);
-        return namedParameterJdbcTemplate.query(sql, parameters, new DayTypeGroupSummaryUnitMapper());
-    }
-
-    class DayTypeGroupSummaryUnitMapper implements RowMapper<DayTypeGroupSummaryUnit> {
-        @Override
-        public DayTypeGroupSummaryUnit mapRow(ResultSet resultSet, int i) throws SQLException {
-            DayTypeGroupSummaryUnit unit = new DayTypeGroupSummaryUnit();
-            unit.setId(resultSet.getString("name"));
-            unit.setSeconds(resultSet.getInt("total"));
-            return unit;
-        }
+        String sql = "select name as id,sum(total_seconds) as seconds from " + type + " where day >=:start and day <=:end group by name";
+        Query query = entityManager.createNativeQuery(sql)
+                .setParameter("start", start)
+                .setParameter("end", end)
+                ;
+        return query.unwrap(NativeQueryImpl.class)
+                .setResultTransformer(Transformers.aliasToBean(DayTypeGroupSummaryUnit.class))
+                .addScalar("id", StringType.INSTANCE)
+                .addScalar("seconds", IntegerType.INSTANCE)
+                .getResultList();
     }
 
     public List<DaySumVo> selectRangeDurations(String start, String end, Boolean showAll) {
-        String sql = "select day,sum(total_seconds) as total from day_project";
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        String sql = "select day as date,sum(total_seconds) as total from day_project";
+        Query query;
         if (showAll == null || !showAll) {
             LocalDateTime s = DateHelper.parse(start);
             LocalDateTime e = StringUtils.isEmpty(end) ? LocalDate.now().atStartOfDay().minusSeconds(1) : DateHelper.parse(end);
@@ -163,24 +167,20 @@ public class QueryWakatimeDataService extends AbstractDaySummaryService {
             }
 //            assertTimeInRange(s.toLocalDate());
             assertTimeInRange(e.toLocalDate());
-            sql += " where day >=:start and day <=:end";
-            parameters.addValue("start", start);
-            parameters.addValue("end", end);
+            sql += " where day >=:start and day <=:end group by day";
+            query = entityManager.createNativeQuery(sql)
+                    .setParameter("start", s)
+                    .setParameter("end", e);
         } else {
-            sql += " where day >=:start";
-            parameters.addValue("start", wakatimeProperties.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        }
-        sql += " group by day";
-        return namedParameterJdbcTemplate.query(sql, parameters, new DaySumMapper());
-    }
+            sql += " where day >=:start group by day";
+            query = entityManager.createNativeQuery(sql)
+                    .setParameter("start", wakatimeProperties.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-    class DaySumMapper implements RowMapper<DaySumVo> {
-        @Override
-        public DaySumVo mapRow(ResultSet resultSet, int i) throws SQLException {
-            DaySumVo unit = new DaySumVo();
-            unit.setDate(resultSet.getTimestamp("day").toLocalDateTime().toLocalDate());
-            unit.setTotal(resultSet.getInt("total"));
-            return unit;
         }
+        return query.unwrap(NativeQueryImpl.class)
+                .setResultTransformer(Transformers.aliasToBean(DaySumVo.class))
+                .addScalar("date", LocalDateType.INSTANCE)
+                .addScalar("total", IntegerType.INSTANCE)
+                .getResultList();
     }
 }

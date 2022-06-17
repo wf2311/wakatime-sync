@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.entity;
 
 import com.wf2311.wakatime.sync.util.CommonUtil;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "heart_beat")
-public class HeartBeatEntity {
+public class HeartBeatEntity extends PanacheEntityBase {
     /**
      * 主键
      */
@@ -25,11 +26,13 @@ public class HeartBeatEntity {
     /**
      * 名称
      */
+    @Column(name = "name", length = 200)
     private String name;
 
     /**
      * uuid
      */
+    @Column(name = "uuid", length = 64)
     private String uuid;
 
     /**
@@ -55,7 +58,7 @@ public class HeartBeatEntity {
 
 
     public void setName(String name) {
-        this.name = CommonUtil.subStringIfOverLength(name, 255);
+        this.name = CommonUtil.subStringIfOverLength(name, 200);
     }
 
 

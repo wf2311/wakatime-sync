@@ -9,13 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-17 22:59.
  */
-@Service
+@ApplicationScoped
 @Slf4j
 public class DingDingMessage extends AbstractMessage {
     private static final String DINGDING_WEB_HOOK_URL = "https://oapi.dingtalk.com/robot/send?access_token=%s";

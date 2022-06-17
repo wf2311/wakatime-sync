@@ -1,16 +1,19 @@
 package com.wf2311.wakatime.sync;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.QuarkusApplication;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
-@SpringBootApplication
-@EnableScheduling
-public class WakatimeSyncApplication {
-
+@QuarkusMain
+public class WakatimeSyncApplication implements QuarkusApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WakatimeSyncApplication.class, args);
+        Quarkus.run(WakatimeSyncApplication.class, args);
     }
 
+    @Override
+    public int run(String... args) {
+        Quarkus.waitForExit();
+        return 0;
+    }
 }
 

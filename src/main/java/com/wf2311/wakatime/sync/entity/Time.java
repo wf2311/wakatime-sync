@@ -1,5 +1,6 @@
 package com.wf2311.wakatime.sync.entity;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "time")
-public class Time {
+public class Time extends PanacheEntityBase {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

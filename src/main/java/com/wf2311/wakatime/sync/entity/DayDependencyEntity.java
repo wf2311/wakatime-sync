@@ -1,6 +1,7 @@
 package com.wf2311.wakatime.sync.entity;
 
 import com.wf2311.wakatime.sync.util.CommonUtil;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "day_dependency")
-public class DayDependencyEntity implements BaseDayEntity {
+public class DayDependencyEntity extends PanacheEntityBase implements BaseDayEntity {
     /**
      * 主键
      */
@@ -25,6 +26,7 @@ public class DayDependencyEntity implements BaseDayEntity {
     /**
      * 名称
      */
+    @Column(name = "name" , length = 200)
     private String name;
 
     /**
@@ -44,6 +46,6 @@ public class DayDependencyEntity implements BaseDayEntity {
     private LocalDateTime createdTime;
 
     public void setName(String name) {
-        this.name = CommonUtil.subStringIfOverLength(name, 300);
+        this.name = CommonUtil.subStringIfOverLength(name, 200);
     }
 }

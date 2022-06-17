@@ -2,6 +2,7 @@ package com.wf2311.wakatime.sync.entity;
 
 import com.wf2311.wakatime.sync.util.CommonUtil;
 import com.wf2311.wakatime.sync.util.StringArrayConverter;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "project_duration")
-public class ProjectDurationEntity {
+public class ProjectDurationEntity extends PanacheEntityBase {
     /**
      * 主键
      */
@@ -27,12 +28,14 @@ public class ProjectDurationEntity {
     /**
      * 分支
      */
+    @Column(name = "branch", length = 200)
     private String branch;
 
     /**
      * 依赖
      */
     @Convert(converter = StringArrayConverter.class)
+    @Column(name = "dependencies", columnDefinition = "text")
     private List<String> dependencies;
 
 
@@ -79,10 +82,10 @@ public class ProjectDurationEntity {
 
 
     public void setBranch(String branch) {
-        this.branch = CommonUtil.subStringIfOverLength(branch, 100);
+        this.branch = CommonUtil.subStringIfOverLength(branch, 200);
     }
     public void setEntity(String entity) {
-        this.entity = CommonUtil.subStringIfOverLength(entity, 255);
+        this.entity = CommonUtil.subStringIfOverLength(entity, 200);
     }
 
     public void setLanguage(String language) {

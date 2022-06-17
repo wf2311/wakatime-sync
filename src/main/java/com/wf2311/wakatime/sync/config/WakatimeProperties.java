@@ -1,7 +1,7 @@
 package com.wf2311.wakatime.sync.config;
 
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 
@@ -9,7 +9,6 @@ import java.time.LocalDate;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 13:38.
  */
-@Configuration
 @ConfigurationProperties(prefix = "wakatime")
 public class WakatimeProperties {
 
@@ -22,19 +21,20 @@ public class WakatimeProperties {
     private Boolean fillNoDataDay;
     private String proxyUrl;
 
-    private LocalDate startDay = LocalDate.now();
+    private String startDay;
 
-    public void setStartDay(String startDay) {
+
+    public final void setStartDay(String startDay) {
         if (startDay != null) {
             try {
-                this.startDay = LocalDate.parse(startDay);
-            } catch (Exception e) {
+                this.startDay = startDay;
+            } catch (Exception ignored) {
             }
         }
     }
 
     public LocalDate getStartDate() {
-        return startDay;
+        return LocalDate.parse(startDay);
     }
 
     public String getSecretApiKey() {

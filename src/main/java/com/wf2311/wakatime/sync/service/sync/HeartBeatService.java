@@ -6,11 +6,12 @@ import com.wf2311.wakatime.sync.entity.HeartBeatEntity;
 import com.wf2311.wakatime.sync.repository.HeartBeatRepository;
 import com.wf2311.wakatime.sync.spider.WakaTimeDataSpider;
 import com.wf2311.wakatime.sync.util.CommonUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,10 +19,10 @@ import java.util.List;
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
  * @since 2019-01-10 14:33.
  */
-@Service
+@ApplicationScoped
 public class HeartBeatService {
-    @Resource
-    private HeartBeatRepository heartBeatRepository;
+    @Inject
+    HeartBeatRepository heartBeatRepository;
     /**
      * 同步某一段时间(以天为单位)内的数据
      */
@@ -42,7 +43,7 @@ public class HeartBeatService {
     /**
      * 同步某天的数据
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackOn = Exception.class)
     public int sync(LocalDate day) {
         long local = heartBeatRepository.countByDay(day);
         List<HeartBeat> data = WakaTimeDataSpider.heartbeat(day);
@@ -54,7 +55,7 @@ public class HeartBeatService {
         List<HeartBeatEntity> heartBeats = HeartBeatConverter.of(data).getHeartBeats();
         if (!CollectionUtils.isEmpty(heartBeats)) {
             deleteDataIfNotNull(day);
-            heartBeatRepository.saveAll(heartBeats);
+            heartBeatRepository.persist(heartBeats);
         }
         int num = (int) (remote - local);
         CommonUtil.syncLog().info(String.format("%s的心跳数据同步完毕，新增%d条记录。", day, num));

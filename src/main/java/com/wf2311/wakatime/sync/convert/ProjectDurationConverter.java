@@ -2,8 +2,6 @@ package com.wf2311.wakatime.sync.convert;
 
 import com.wf2311.wakatime.sync.domain.ProjectDuration;
 import com.wf2311.wakatime.sync.entity.ProjectDurationEntity;
-import com.wf2311.wakatime.sync.spider.JsonParser;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
@@ -41,12 +39,6 @@ public class ProjectDurationConverter {
     }
 
     private ProjectDurationEntity convert(ProjectDuration s) {
-        ProjectDurationEntity duration = new ProjectDurationEntity();
-        BeanUtils.copyProperties(s, duration, "dependencies");
-        duration.setDependencies(JsonParser.parseDependencies(s.getDependencies()));
-        duration.setStartTime(EntityConvertHelper.doubleToDate(s.getSecond()));
-        duration.setEndTime(EntityConvertHelper.doubleToDate(s.getSecond() + s.getDuration()));
-        duration.setCreatedTime(now);
-        return duration;
+        return EntityMappers.INSTANCE.convert(s, now);
     }
 }

@@ -52,13 +52,12 @@ public class JoddHttpClient {
     }
 
     public static String get(String url, Map<String, String> params) {
-        SocketHttpConnectionProvider s = new SocketHttpConnectionProvider();
         HttpResponse response = null;
 
         try {
             HttpRequest request = HttpRequest.get(url)
                     .query("api_key", WakatimeProperties.SECRET_API_KEY)
-                    .trustAllCerts(true)
+//                    .trustAllCerts(true)
                     .query(params)
                     .timeout(1000 * 30);
             if (CommonUtil.hasValue(WakatimeProperties.PROXY_URL)) {

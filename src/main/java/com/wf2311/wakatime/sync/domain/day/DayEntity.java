@@ -1,9 +1,8 @@
 package com.wf2311.wakatime.sync.domain.day;
 
-import com.wf2311.wakatime.sync.convert.EntityConvertHelper;
+import com.wf2311.wakatime.sync.convert.EntityMappers;
 import com.wf2311.wakatime.sync.domain.base.BaseWakatimeData;
 import com.wf2311.wakatime.sync.entity.DayEntityEntity;
-import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,11 +24,6 @@ import java.time.LocalDateTime;
 @Deprecated
 public class DayEntity extends BaseWakatimeData {
     public DayEntityEntity convert(LocalDate day, LocalDateTime createdTime) {
-        DayEntityEntity t = new DayEntityEntity();
-        BeanUtils.copyProperties(this, t);
-        t.setDay(day);
-        t.setCreatedTime(createdTime);
-        t.setSimpleName(EntityConvertHelper.getSimpleName(getName()));
-        return t;
+        return EntityMappers.INSTANCE.convert(this, day, createdTime);
     }
 }
