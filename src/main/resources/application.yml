@@ -26,6 +26,10 @@ quarkus:
     physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   smallrye-health:
     root-path: /actuator/health
+  micrometer:
+    export:
+      prometheus:
+        path: /actuator/prometheus
   native:
     debug:
         enabled: true
