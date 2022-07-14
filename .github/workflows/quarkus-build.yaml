@@ -15,7 +15,7 @@ jobs:
       - name: Install graalvm
         uses: DeLaGuardo/setup-graalvm@3
         with:
-          graalvm-version: '20.0.0.java11'
+          graalvm-version: '22.0.0.2.java11'
       - name: Install native-image
         run: gu install native-image
       - name: Set version
@@ -41,7 +41,7 @@ jobs:
       - name: Install graalvm
         uses: DeLaGuardo/setup-graalvm@3
         with:
-          graalvm-version: '20.0.0.java11'
+          graalvm-version: '22.0.0.2.java11'
       - name: Install native-image
         run: ${{ env.JAVA_HOME }}\bin\gu.cmd install native-image
         shell: cmd
@@ -76,7 +76,7 @@ jobs:
       - name: Install graalvm
         uses: DeLaGuardo/setup-graalvm@3
         with:
-          graalvm-version: '20.0.0.java11'
+          graalvm-version: '22.0.0.2.java11'
       - name: Install native-image
         run: gu install native-image
       - name: Set version
