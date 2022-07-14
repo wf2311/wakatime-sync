@@ -24,11 +24,11 @@ jobs:
         run: ./mvnw -DskipTests package -Dnative
       - name: Upload native executable
         id: upload-native-executable
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./target/wakatime-sync-${{ github.event.release.tag_name }}-runner
           asset_name: wakatime-sync-${{ github.event.release.tag_name }}-linux
           asset_content_type: application/octet-stream
@@ -59,11 +59,11 @@ jobs:
         shell: cmd
       - name: Upload native executable
         id: upload-native-executable
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./target/wakatime-sync-${{ github.event.release.tag_name }}-runner.exe
           asset_name: wakatime-sync-${{ github.event.release.tag_name }}-win64.exe
           asset_content_type: application/octet-stream
@@ -85,11 +85,11 @@ jobs:
         run: ./mvnw -DskipTests package -Dnative
       - name: Upload native executable
         id: upload-native-executable
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./target/wakatime-sync-${{ github.event.release.tag_name }}-runner
           asset_name: wakatime-sync-${{ github.event.release.tag_name }}-macos
           asset_content_type: application/octet-stream
