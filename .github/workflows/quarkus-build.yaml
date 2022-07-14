@@ -16,6 +16,11 @@ jobs:
         uses: DeLaGuardo/setup-graalvm@3
         with:
           graalvm-version: '22.0.0.2.java11'
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Install native-image
         run: gu install native-image
       - name: Set version
@@ -45,6 +50,11 @@ jobs:
       - name: Install native-image
         run: ${{ env.JAVA_HOME }}\bin\gu.cmd install native-image
         shell: cmd
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Set version
         run: mvnw versions:set -DnewVersion="${{ github.event.release.tag_name }}"
         shell: cmd
@@ -77,6 +87,11 @@ jobs:
         uses: DeLaGuardo/setup-graalvm@3
         with:
           graalvm-version: '22.0.0.2.java11'
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Install native-image
         run: gu install native-image
       - name: Set version
