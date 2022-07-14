@@ -28,3 +28,6 @@ echo "build and push docker image"
 #docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRY_HOST
 docker build --build-arg APP_NAME=$APP_NAME -t $REGISTRY_GROUP/$REGISTRY_IMAGE .
 docker push $REGISTRY_GROUP/$REGISTRY_IMAGE
+
+#docker build  -t wf2311/wakatime-sync:native-1.0 .
+#docker push wf2311/wakatime-sync:native-1.0
