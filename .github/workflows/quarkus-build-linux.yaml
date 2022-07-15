@@ -41,5 +41,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./target/wakatime-sync-native-0.1-SNAPSHOT-runner
           asset_name: wakatime-sync-native-0.1-SNAPSHOT-runner
-          tag: ${{ github.ref }}
+          tag: native-0.1-SNAPSHOT
           overwrite: true
