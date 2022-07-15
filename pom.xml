@@ -5,7 +5,7 @@
 
     <groupId>com.wf2311</groupId>
     <artifactId>wakatime-sync</artifactId>
-    <version>1.0</version>
+    <version>native-0.1-SNAPSHOT</version>
 
     <name>wakatime-sync</name>
 

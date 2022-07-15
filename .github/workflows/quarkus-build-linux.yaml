@@ -18,9 +18,6 @@ jobs:
           graalvm-version: '22.0.0.2.java11'
       - name: Install native-image
         run: gu install native-image
-      - name: Set version
-        run: ./mvnw versions:set -DnewVersion="${{ github.event.release.tag_name }}"
-
       - name: Build native executable
         run: ./mvnw -DskipTests package -Dnative
       - name: Login to DockerHub
@@ -39,11 +36,10 @@ jobs:
             wf2311/wakatime-sync:latest
       - name: Upload native executable
         id: upload-native-executable
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./target/wakatime-sync-${{ github.event.release.tag_name }}-runner
-          asset_name: wakatime-sync-${{ github.event.release.tag_name }}-linux
-          asset_content_type: application/octet-stream
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./target/wakatime-sync-native-0.1-SNAPSHOT-runner
+          asset_name: wakatime-sync-native-0.1-SNAPSHOT-runner
+          tag: ${{ github.ref }}
+          overwrite: true
