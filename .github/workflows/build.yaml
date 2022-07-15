@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest,macos-latest, windows-latest ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install graalvm
         uses: graalvm/setup-graalvm@v1
         with:
@@ -23,10 +23,12 @@ jobs:
         run: ./mvnw -DskipTests package -Dnative
 
       - name: Upload native executable
-        uses: actions/upload-artifact@v2
+        id: upload-native-executable
+        uses: svenstaro/upload-release-action@v2
         with:
-          path: ./target/wakatime-sync-native-0.1-SNAPSHOT-runner
-          name: wakatime-sync-native-0.1-SNAPSHOT-runner-${{ matrix.os }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./target/wakatime-sync-native-0.1-SNAPSHOT-runner
+          asset_name: wakatime-sync-native-0.1-SNAPSHOT-runner-${{ matrix.os }}
           tag: native-0.1-SNAPSHOT
           overwrite: true
       - name: Login to DockerHub
