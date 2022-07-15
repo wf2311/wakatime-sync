@@ -13,11 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install graalvm
-        uses: DeLaGuardo/setup-graalvm@3
+        uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: '22.0.0.2.java11'
-      - name: Install native-image
-        run: gu install native-image
+          version: '22.1.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build native executable
         run: ./mvnw -DskipTests package -Dnative
       - name: Login to DockerHub
@@ -40,6 +41,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./target/wakatime-sync-native-0.1-SNAPSHOT-runner
-          asset_name: wakatime-sync-native-0.1-SNAPSHOT-runner
+          asset_name: wakatime-sync-native-0.1-SNAPSHOT-runner-linux
           tag: native-0.1-SNAPSHOT
           overwrite: true
