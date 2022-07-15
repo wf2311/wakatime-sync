@@ -35,8 +35,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            wakatime-sync:native-0.1
-            wakatime-sync:latest
+            wf2311/wakatime-sync:native-0.1
+            wf2311/wakatime-sync:latest
       - name: Upload native executable
         id: upload-native-executable
         uses: actions/upload-release-asset@v1.0.2
