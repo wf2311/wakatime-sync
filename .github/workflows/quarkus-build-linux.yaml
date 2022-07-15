@@ -35,7 +35,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            wakatime-sync-native:${{ github.event.release.tag_name }}
+            wakatime-sync-native:0.1
             wakatime-sync-native:latest
       - name: Upload native executable
         id: upload-native-executable
