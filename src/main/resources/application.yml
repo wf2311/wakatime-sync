@@ -36,3 +36,7 @@ quarkus:
     additional-build-args:
       - --initialize-at-run-time=jodd.util.RandomString
       - --trace-object-instantiation=java.io.FilePermission
+cron:
+  expression:
+    syncYesterday: "0 05 0 * * ?"
+    sendYesterdayDataInfo: "0 00 9 * * ?"
