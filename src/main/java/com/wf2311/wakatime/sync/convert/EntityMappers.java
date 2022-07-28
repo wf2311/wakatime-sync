@@ -23,7 +23,7 @@ public interface EntityMappers {
 
 
     @Mappings({
-            @Mapping(target = "dependencies", expression = "java(JsonParser.parseDependencies(duration.getDependencies()))"),
+//            @Mapping(target = "dependencies", expression = "java(JsonParser.parseDependencies(duration.getDependencies()))"),
             @Mapping(target = "startTime", expression = "java(EntityConvertHelper.doubleToDate(duration.getSecond()))"),
             @Mapping(target = "endTime", expression = "java(EntityConvertHelper.doubleToDate(duration.getSecond()+duration.getDuration()))"),
             @Mapping(target = "createdTime", source = "createdTime"),
@@ -32,7 +32,7 @@ public interface EntityMappers {
 
 
     @Mappings({
-            @Mapping(target = "dependencies", expression = "java(JsonParser.parseDependencies(duration.getDependencies()))"),
+//            @Mapping(target = "dependencies", expression = "java(JsonParser.parseDependencies(duration.getDependencies()))"),
             @Mapping(target = "startTime", expression = "java(EntityConvertHelper.doubleToDate(duration.getSecond()))"),
             @Mapping(target = "endTime", expression = "java(EntityConvertHelper.doubleToDate(duration.getSecond()+duration.getDuration()))"),
             @Mapping(target = "createdTime", source = "createdTime"),

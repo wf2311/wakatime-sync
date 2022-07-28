@@ -1,7 +1,11 @@
 package com.wf2311.wakatime.sync.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wf2311.wakatime.sync.util.StringArrayConverter;
 import lombok.Data;
+
+import javax.persistence.Convert;
+import java.util.List;
 
 /**
  * @author <a href="mailto:wf2311@163.com">wf2311</a>
@@ -9,7 +13,8 @@ import lombok.Data;
  */
 @Data
 public class Duration {
-    private String dependencies;
+    @Convert(converter = StringArrayConverter.class)
+    private List<String> dependencies;
     @JsonProperty("is_debugging")
     private Boolean isDebugging;
     private String project;
